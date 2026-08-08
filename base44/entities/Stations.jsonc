@@ -1,0 +1,75 @@
+{
+  "name": "Stations",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "Upper Level - Billiards",
+        "Lower Level - Gaming Salle"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "Sofa Station",
+        "Sim-Racing Pod",
+        "Billiard Table"
+      ]
+    },
+    "item_category": {
+      "type": "string",
+      "enum": [
+        "PS5",
+        "Xbox Series S",
+        "Billiard Table"
+      ]
+    },
+    "hardware_notes": {
+      "type": "string"
+    },
+    "pricing_model": {
+      "type": "string",
+      "enum": [
+        "Dual Mode (Match Tiers or Time Blocks)",
+        "Time Blocks Only",
+        "Hybrid (Per Game or Per Hour)"
+      ]
+    },
+    "rate_1v1_match": {
+      "type": "number"
+    },
+    "rate_2v2_match": {
+      "type": "number"
+    },
+    "hourly_rate": {
+      "type": "number"
+    },
+    "per_game_rate": {
+      "type": "number"
+    },
+    "station_code": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Available",
+        "Occupied",
+        "Maintenance"
+      ],
+      "default": "Available"
+    }
+  },
+  "required": [
+    "name",
+    "level",
+    "type",
+    "item_category",
+    "pricing_model",
+    "status"
+  ]
+}

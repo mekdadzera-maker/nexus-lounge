@@ -1,0 +1,24 @@
+{
+  "name": "SupportMessages",
+  "type": "object",
+  "properties": {
+    "chat_room_id": {
+      "type": "string"
+    },
+    "sender_role": {
+      "type": "string",
+      "enum": [
+        "Customer",
+        "Staff"
+      ]
+    },
+    "message_text": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "chat_room_id",
+    "sender_role",
+    "message_text"
+  ]
+}

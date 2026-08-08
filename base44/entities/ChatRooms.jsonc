@@ -1,0 +1,29 @@
+{
+  "name": "ChatRooms",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "guest_session_token": {
+      "type": "string"
+    },
+    "customer_name": {
+      "type": "string"
+    },
+    "last_message_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_message_preview": {
+      "type": "string"
+    },
+    "is_unread_by_admin": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "customer_name"
+  ]
+}

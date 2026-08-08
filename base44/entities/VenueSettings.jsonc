@@ -1,0 +1,27 @@
+{
+  "name": "VenueSettings",
+  "type": "object",
+  "properties": {
+    "opening_time": {
+      "type": "string"
+    },
+    "closing_time": {
+      "type": "string"
+    },
+    "display_closing_string": {
+      "type": "string"
+    },
+    "current_rating": {
+      "type": "number"
+    },
+    "alarm_sound_url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "opening_time",
+    "closing_time",
+    "display_closing_string",
+    "current_rating"
+  ]
+}

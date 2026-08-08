@@ -1,0 +1,34 @@
+{
+  "name": "PricingTiers",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "PS5 Tiers",
+        "PS5 Autre Jeux",
+        "Xbox Forza Pods",
+        "Billiard Lounge"
+      ]
+    },
+    "rate_da": {
+      "type": "number"
+    },
+    "duration_minutes": {
+      "type": "number"
+    },
+    "is_match_based": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "name",
+    "category",
+    "rate_da",
+    "duration_minutes",
+    "is_match_based"
+  ]
+}
