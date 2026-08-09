@@ -70,14 +70,14 @@ function PricingRow({ tier, onSave, onDelete }) {
   const [saving, setSaving] = useState(false);
   const dirty = row.label !== tier.label || String(row.price) !== String(tier.price);
   return (
-    <div className="grid grid-cols-12 items-center gap-2">
-      <input className={`${inputCls} col-span-7`} value={row.label} onChange={(e) => setRow({ ...row, label: e.target.value })} />
-      <input className={`${inputCls} col-span-3`} type="number" value={row.price} onChange={(e) => setRow({ ...row, price: e.target.value })} />
-      <div className="col-span-2 flex justify-end gap-1">
-        <button onClick={() => { setSaving(true); onSave(row).finally(() => setSaving(false)); }} disabled={!dirty} className="rounded-lg p-2 text-emerald-400 hover:bg-white/10 disabled:opacity-30">
+    <div className="flex flex-col gap-2 sm:grid sm:grid-cols-12 sm:items-center">
+      <input className={`${inputCls} sm:col-span-6`} value={row.label} onChange={(e) => setRow({ ...row, label: e.target.value })} />
+      <div className="flex items-center gap-2 sm:col-span-6">
+        <input className={`${inputCls} flex-1`} type="number" value={row.price} onChange={(e) => setRow({ ...row, price: e.target.value })} />
+        <button onClick={() => { setSaving(true); onSave(row).finally(() => setSaving(false)); }} disabled={!dirty} className="shrink-0 rounded-lg p-2 text-emerald-400 hover:bg-white/10 disabled:opacity-30">
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
         </button>
-        <button onClick={onDelete} className="rounded-lg p-2 text-red-400 hover:bg-red-500/10">
+        <button onClick={onDelete} className="shrink-0 rounded-lg p-2 text-red-400 hover:bg-red-500/10">
           <Trash2 className="h-4 w-4" />
         </button>
       </div>
