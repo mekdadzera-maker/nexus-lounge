@@ -22,10 +22,6 @@ export default function BookingForm({ station, tiers, settings, user, onClose, o
   const selectedTier = list.find((t) => t.id === mode);
 
   useEffect(() => {
-    if (list.length) setMode(list[0].id);
-  }, [list]);
-
-  useEffect(() => {
     setQuantity(1);
   }, [mode]);
 
