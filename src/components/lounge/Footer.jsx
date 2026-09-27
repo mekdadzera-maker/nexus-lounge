@@ -37,15 +37,15 @@ export default function Footer() {
             <ul className="space-y-3 text-sm text-white/70">
               <li className="flex items-center gap-3">
                 <Phone className="h-4 w-4 text-blue-400" />
-                <a href="tel:0554026108" className="hover:text-white">0554 02 61 08</a>
+                <a href="tel:0791744734" className="hover:text-white">0791 74 47 34</a>
               </li>
               <li className="flex items-center gap-3">
                 <MapPin className="h-4 w-4 text-emerald-400" />
-                <span>6977+2F Sidi Bel Abbès</span>
+                <span>69C6+5W Sidi Bel Abbès</span>
               </li>
               <li className="flex items-center gap-3">
                 <Clock className="h-4 w-4 text-amber-400" />
-                <span>{t("hero.open")} · {t("hero.closes")} 3 AM</span>
+                <span>{t("hero.open")} · {t("hero.closes")} 4 AM</span>
               </li>
               <li className="flex items-center gap-3">
                 <Instagram className="h-4 w-4 text-pink-400" />
