@@ -14,7 +14,7 @@ export default function BookingForm({ station, tiers, settings, user, onClose, o
   const [contactValue, setContactValue] = useState("");
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
-  const [mode, setMode] = useState("");
+  const [mode, setMode] = useState(() => tiers?.[0]?.id || "");
   const [quantity, setQuantity] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
