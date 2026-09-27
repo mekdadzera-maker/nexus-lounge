@@ -10,9 +10,22 @@ export default function Footer() {
         <div className="grid gap-10 md:grid-cols-3">
           {/* Brand */}
           <div>
-            <div className="font-heading text-2xl font-extrabold tracking-tight text-white">
-              NEXUS<span className="text-blue-400">.</span>
-            </div>
+            <svg viewBox="0 0 980 980" className="h-16 w-16" xmlns="http://www.w3.org/2000/svg">
+              <path
+                fillRule="evenodd"
+                fill="#FFFFFF"
+                d="M 366,303 L 226,395 L 226,550 L 276,594 L 278,624 L 281,629 L 313,646 L 334,637 L 365,658 Z
+                   M 319,394 L 320,395 L 320,547 L 319,548 L 311,548 L 309,546 L 309,536 L 307,534 L 298,515 L 295,516 L 287,522 L 273,522 L 272,521 L 272,427 L 276,423 L 286,417 L 289,414 L 303,405 L 313,397 Z"
+              />
+              <path
+                fill="#FFFFFF"
+                d="M 443,244 L 398,279 L 398,679 L 487,735 L 576,683 L 576,567 L 531,567 L 529,654 L 485,678 L 443,651 Z"
+              />
+              <path
+                fill="#FFFFFF"
+                d="M 608,297 L 609,669 L 654,641 L 654,511 L 691,509 L 691,457 L 654,455 L 654,400 L 656,399 L 705,435 L 706,471 L 753,471 L 753,402 Z"
+              />
+            </svg>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/50">
               {t("footer.tag")}
             </p>
