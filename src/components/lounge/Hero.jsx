@@ -7,9 +7,9 @@ import { useLang } from "@/lib/i18n";
 export default function Hero({ onBook, settings, stats }) {
   const { t } = useLang();
   const rating = settings?.current_rating ?? 5.0;
-  const openingTime = settings?.opening_time || "10:00";
-  const closingTime = settings?.closing_time || "03:00";
-  const closingLabel = settings?.display_closing_string || "3 AM";
+  const openingTime = settings?.opening_time || "17:00";
+  const closingTime = settings?.closing_time || "04:00";
+  const closingLabel = settings?.display_closing_string || "4 AM";
   const { open } = getOpenStatus(openingTime, closingTime);
   const stationsLive = stats?.total ?? 13;
 
@@ -74,7 +74,7 @@ export default function Hero({ onBook, settings, stats }) {
           {/* Quick info */}
           <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm">
             <span className="inline-flex items-center gap-2 text-white/60">
-              <MapPin className="h-4 w-4 text-blue-400" /> 6977+2F {t("nav.location")}
+              <MapPin className="h-4 w-4 text-blue-400" /> 69C6+5W {t("nav.location")}
             </span>
             <span className={`inline-flex items-center gap-2 ${open ? "text-emerald-400" : "text-red-400"}`}>
               <Clock className="h-4 w-4" />
