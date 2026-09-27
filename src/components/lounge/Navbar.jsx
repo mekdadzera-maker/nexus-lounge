@@ -31,7 +31,7 @@ export default function Navbar({ onReserve }) {
         <MenuItem icon={<LayoutDashboard className="h-4 w-4" />} label={t("nav.admin")} onClick={() => { navigate("/admin/dashboard"); setProfileOpen(false); setMobileOpen(false); }} />
       )}
       <MenuItem icon={<CalendarCheck className="h-4 w-4" />} label={t("nav.bookings")} onClick={() => { navigate("/my-bookings"); setProfileOpen(false); setMobileOpen(false); }} />
-      <MenuItem icon={<Phone className="h-4 w-4" />} label={t("nav.contact")} href="tel:0554026108" onClick={() => { setProfileOpen(false); setMobileOpen(false); }} />
+      <MenuItem icon={<Phone className="h-4 w-4" />} label={t("nav.contact")} href="tel:0791744734" onClick={() => { setProfileOpen(false); setMobileOpen(false); }} />
       {isAuthenticated ? (
         <MenuItem icon={<LogOut className="h-4 w-4" />} label={t("nav.logout")} onClick={handleLogout} danger />
       ) : (
