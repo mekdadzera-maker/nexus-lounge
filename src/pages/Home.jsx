@@ -12,6 +12,7 @@ import Footer from "@/components/lounge/Footer";
 import Navbar from "@/components/lounge/Navbar";
 import GuestPrompt from "@/components/lounge/GuestPrompt";
 import SessionAlarmNotifier from "@/components/lounge/SessionAlarmNotifier";
+import ContactSection from "@/components/ContactSection";
 import SupportChatWidget from "@/components/lounge/SupportChatWidget";
 import { useAuth } from "@/lib/AuthContext";
 import { tiersForStation } from "@/lib/pricing";
@@ -158,7 +159,9 @@ export default function Home() {
           </button>
         </div>
       </section>
-
+      
+<ContactSection settings={settings} />
+      
       <Footer />
 
       {/* Modals */}
