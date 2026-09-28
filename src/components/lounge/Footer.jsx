@@ -60,7 +60,7 @@ export default function Footer() {
             <ul className="space-y-2.5 text-sm text-white/70">
               <li>🎱 Upper Level — Billiards Lounge</li>
               <li>🎮 Lower Level — Gaming Salle</li>
-              <li>🏎️ 2 Forza Sim-Racing Pods</li>
+              <li>🎱 2 Billiards Tables</li>
               <li>🕹️ 9 PS5 Sofa Stations</li>
             </ul>
           </div>
