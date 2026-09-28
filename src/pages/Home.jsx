@@ -67,7 +67,7 @@ export default function Home() {
   const stats = {
     total: stations.length,
     ps5: stations.filter((s) => s.category === "PS5").length,
-    forza: stations.filter((s) => s.category === "Forza").length,
+    billiards: stations.filter((s) => s.level === "Billiards").length,
   };
 
   return (
@@ -159,9 +159,8 @@ export default function Home() {
           </button>
         </div>
       </section>
-      
-<ContactSection settings={settings} />
-      
+
+      <ContactSection settings={settings} />
       <Footer />
 
       {/* Modals */}
