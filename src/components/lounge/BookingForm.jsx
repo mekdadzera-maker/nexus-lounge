@@ -20,19 +20,37 @@ export default function BookingForm({ station, tiers, settings, user, onClose, o
   const [error, setError] = useState("");
 
   // Guard against the mobile "click-through" issue: the tap that opens this
-  // modal can also register as a click on the backdrop right after it mounts
-  // (touch devices fire the synthetic click slightly after touchend, by which
-  // point the backdrop already exists under the finger). Ignore backdrop
-  // clicks for a brief window after mount so the opening tap can't also close it.
+  // modal can also register as a click on the backdrop right after it mounts,
+  // because touch devices dispatch the synthetic click event slightly after
+  // touchend -- by which point the backdrop already exists under the finger.
+  // A fixed timeout is unreliable (Chrome's delayed click can land later than
+  // any guess under load), so instead we wait two animation frames, which
+  // reliably clears the current input's event queue regardless of device
+  // speed, and we also require the press to have started on the backdrop
+  // itself (not just ended there) before allowing it to close the modal.
   const [canClose, setCanClose] = useState(false);
+  const pressStartedOnBackdropRef = React.useRef(false);
   useEffect(() => {
     setCanClose(false);
-    const timer = setTimeout(() => setCanClose(true), 350);
-    return () => clearTimeout(timer);
+    let raf1, raf2;
+    raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => setCanClose(true));
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
   }, [station?.id]);
 
-  const handleBackdropClick = () => {
-    if (canClose) onClose();
+  const handleBackdropPointerDown = (e) => {
+    pressStartedOnBackdropRef.current = e.target === e.currentTarget;
+  };
+
+  const handleBackdropPointerUp = (e) => {
+    if (canClose && pressStartedOnBackdropRef.current && e.target === e.currentTarget) {
+      onClose();
+    }
+    pressStartedOnBackdropRef.current = false;
   };
 
   const selectedTier = list.find((t) => t.id === mode);
@@ -97,7 +115,8 @@ export default function BookingForm({ station, tiers, settings, user, onClose, o
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center"
-        onClick={handleBackdropClick}
+        onPointerDown={handleBackdropPointerDown}
+        onPointerUp={handleBackdropPointerUp}
       >
         <motion.div
           initial={{ y: 40, opacity: 0 }}
