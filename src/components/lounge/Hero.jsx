@@ -94,7 +94,7 @@ export default function Hero({ onBook, settings, stats }) {
             { value: stats?.total ?? 13, label: t("stat.stations") },
             { value: 2, label: t("stat.levels") },
             { value: stats?.ps5 ?? 9, label: t("stat.ps5") },
-            { value: stats?.billiards ?? 4, label: t("stat.billiards") },
+            { value: stats?.billiards ?? 2, label: t("stat.billiards") },
           ].map((s) => (
             <div key={s.label} className="px-6 py-5 text-center">
               <div className="font-heading text-3xl font-bold text-white">{s.value}</div>
