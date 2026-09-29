@@ -19,6 +19,22 @@ export default function BookingForm({ station, tiers, settings, user, onClose, o
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  // Guard against the mobile "click-through" issue: the tap that opens this
+  // modal can also register as a click on the backdrop right after it mounts
+  // (touch devices fire the synthetic click slightly after touchend, by which
+  // point the backdrop already exists under the finger). Ignore backdrop
+  // clicks for a brief window after mount so the opening tap can't also close it.
+  const [canClose, setCanClose] = useState(false);
+  useEffect(() => {
+    setCanClose(false);
+    const timer = setTimeout(() => setCanClose(true), 350);
+    return () => clearTimeout(timer);
+  }, [station?.id]);
+
+  const handleBackdropClick = () => {
+    if (canClose) onClose();
+  };
+
   const selectedTier = list.find((t) => t.id === mode);
 
   useEffect(() => {
@@ -81,7 +97,7 @@ export default function BookingForm({ station, tiers, settings, user, onClose, o
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center"
-        onClick={onClose}
+        onClick={handleBackdropClick}
       >
         <motion.div
           initial={{ y: 40, opacity: 0 }}
