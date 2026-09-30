@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { LayoutDashboard, CalendarRange, Clock, Tag, Bell, MessageSquare, ArrowLeft, ShieldAlert } from "lucide-react";
+import { LayoutDashboard, CalendarRange, Clock, Tag, Bell, MessageSquare, Monitor, ArrowLeft, ShieldAlert } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { useLang } from "@/lib/i18n";
 import OperatingHoursPanel from "@/components/admin/OperatingHoursPanel";
@@ -9,6 +9,7 @@ import AlarmPanel from "@/components/admin/AlarmPanel";
 import SchedulerPanel from "@/components/admin/SchedulerPanel";
 import SupportHub from "@/components/admin/SupportHub";
 import BookingsPanel from "@/components/admin/BookingsPanel";
+import StationsPanel from "@/components/admin/StationsPanel";
 
 const STAFF_ROLES = ["Admin", "admin", "Staff", "staff"];
 
@@ -32,8 +33,9 @@ export default function AdminDashboard() {
       </div>
     );
   }
-const tabs = [
+  const tabs = [
     { key: "bookings", label: "Bookings", icon: CalendarRange },
+    { key: "stations", label: "Stations", icon: Monitor },
     { key: "scheduler", label: t("admin.tab.scheduler"), icon: CalendarRange },
     { key: "hours", label: t("admin.tab.hours"), icon: Clock },
     { key: "pricing", label: t("admin.tab.pricing"), icon: Tag },
@@ -72,6 +74,7 @@ const tabs = [
 
       <div className="mx-auto max-w-7xl px-6 py-8">
         {tab === "bookings" && <BookingsPanel />}
+        {tab === "stations" && <StationsPanel />}
         {tab === "scheduler" && <SchedulerPanel />}
         {tab === "hours" && <OperatingHoursPanel />}
         {tab === "pricing" && <PricingPanel />}
