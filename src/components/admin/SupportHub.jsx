@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
+import AttachmentContent from "@/components/lounge/AttachmentContent";
 
 export default function SupportHub() {
   const [rooms, setRooms] = useState([]);
@@ -91,7 +92,9 @@ export default function SupportHub() {
           {!selected && <p className="text-center text-sm text-white/40">Select a chat to start.</p>}
           {messages.map((m) => (
             <div key={m.id} className={`flex ${m.sender_role === "Staff" ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${m.sender_role === "Staff" ? "rounded-br-sm bg-emerald-500 text-black" : "rounded-bl-sm bg-white/10 text-white"}`}>{m.message_text}</div>
+              <div className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${m.sender_role === "Staff" ? "rounded-br-sm bg-emerald-500 text-black" : "rounded-bl-sm bg-white/10 text-white"}`}>
+                <AttachmentContent message={m} url={m.file_url} />
+              </div>
             </div>
           ))}
         </div>
