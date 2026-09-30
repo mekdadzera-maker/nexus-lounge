@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
+import AttachmentContent from "@/components/lounge/AttachmentContent";
 
 export default function SupportChatWidget() {
   const [open, setOpen] = useState(false);
@@ -100,7 +101,7 @@ export default function SupportChatWidget() {
                 {messages.map((m) => (
                   <div key={m.id} className={`flex ${m.sender_role === "Customer" ? "justify-end" : "justify-start"}`}>
                     <div className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${m.sender_role === "Customer" ? "rounded-br-sm bg-blue-500 text-white" : "rounded-bl-sm bg-white/10 text-white"}`}>
-                      {m.message_text}
+                      <AttachmentContent message={m} url={m.file_url} />
                     </div>
                   </div>
                 ))}
@@ -111,9 +112,9 @@ export default function SupportChatWidget() {
                   onChange={(e) => setText(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && send()}
                   placeholder="Type a message..."
-                  className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white placeholder-white/30 outline-none focus:border-blue-500"
+                  className="min-w-0 flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white placeholder-white/30 outline-none focus:border-blue-500"
                 />
-                <button onClick={send} className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500 text-white hover:bg-blue-400">
+                <button onClick={send} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500 text-white hover:bg-blue-400">
                   <Send className="h-4 w-4" />
                 </button>
               </div>
