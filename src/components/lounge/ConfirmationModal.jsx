@@ -14,7 +14,7 @@ export default function ConfirmationModal({ booking, onClose }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto bg-black/75 backdrop-blur-sm p-4 py-8"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4"
         onClick={onClose}
       >
         <motion.div
@@ -23,11 +23,11 @@ export default function ConfirmationModal({ booking, onClose }) {
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ type: "spring", damping: 24, stiffness: 300 }}
           onClick={(e) => e.stopPropagation()}
-          className="scrollbar-thin relative w-full max-w-md max-h-[85vh] overflow-y-auto rounded-3xl border border-emerald-500/30 bg-[#0c0f0d] p-7 glow-green"
+          className="scrollbar-thin relative w-full max-w-md max-h-[85vh] overflow-y-auto overscroll-contain rounded-3xl border border-emerald-500/30 bg-[#0c0f0d] p-7 glow-green"
         >
           <button
             onClick={onClose}
-            className="sticky top-0 float-right -mt-1 -mr-1 rounded-lg bg-[#0c0f0d] p-1 text-white/40 hover:bg-white/10 hover:text-white"
+            className="sticky top-0 float-right -mt-1 -mr-1 z-10 rounded-lg bg-[#0c0f0d] p-1 text-white/40 hover:bg-white/10 hover:text-white"
           >
             <X className="h-5 w-5" />
           </button>
