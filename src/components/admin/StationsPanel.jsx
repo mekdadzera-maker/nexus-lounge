@@ -23,11 +23,11 @@ export default function StationsPanel() {
   const [editing, setEditing] = useState(null);
   const [view, setView] = useState("manage");
 
-  const load = async () => {
-    setLoading(true);
+  const load = async (opts = {}) => {
+    if (!opts.silent) setLoading(true);
     const { data } = await supabase.from("stations").select("*").order("id");
     setStations(data || []);
-    setLoading(false);
+    if (!opts.silent) setLoading(false);
   };
   useEffect(() => { load(); }, []);
 
@@ -51,7 +51,7 @@ export default function StationsPanel() {
       {loading ? (
         <Loader2 className="h-6 w-6 animate-spin text-white/50" />
       ) : view === "live" ? (
-        <RoomLayoutView stations={stations} onEdit={(s) => setEditing({ ...s })} onMoved={load} />
+        <RoomLayoutView stations={stations} onEdit={(s) => setEditing({ ...s })} onMoved={() => load({ silent: true })} />
       ) : stations.length === 0 ? (
         <p className="text-sm text-white/50">No stations yet.</p>
       ) : (
@@ -139,4 +139,4 @@ function FormField({ label, children, className }) {
 }
 function Select({ value, opts, onChange, input }) {
   return <select value={value} onChange={(e) => onChange(e.target.value)} className={input}>{opts.map((o) => <option key={o} value={o} className="bg-[#101012]">{o}</option>)}</select>;
-}
+              }
