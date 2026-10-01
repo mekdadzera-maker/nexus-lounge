@@ -2,7 +2,7 @@ import { supabase } from "@/lib/supabaseClient";
 
 import React, {useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Circle, Gamepad2, Gauge } from "lucide-react";
+import { Circle, Gamepad2, Gauge, WifiOff } from "lucide-react";
 
 import Hero from "@/components/lounge/Hero";
 import StationCard from "@/components/lounge/StationCard";
@@ -41,6 +41,18 @@ export default function Home() {
   const [tiers, setTiers] = useState([]);
   const stationsRef = useRef(null);
   const { user, isAuthenticated } = useAuth();
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  useEffect(() => {
+    const goOnline = () => setIsOffline(false);
+    const goOffline = () => setIsOffline(true);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+    return () => {
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
+    };
+  }, []);
 
   useEffect(() => {
     supabase.from("stations").select("*")
@@ -72,6 +84,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#08080a]">
+      {isOffline && (
+        <div className="sticky top-0 z-[60] flex items-center justify-center gap-2 bg-amber-500 px-4 py-2 text-center text-sm font-medium text-black">
+          <WifiOff className="h-4 w-4" />
+          You're offline — showing saved info. Booking needs a connection.
+        </div>
+      )}
       <Navbar onReserve={scrollToStations} />
       <Hero onBook={scrollToStations} settings={settings} stats={stats} />
 
