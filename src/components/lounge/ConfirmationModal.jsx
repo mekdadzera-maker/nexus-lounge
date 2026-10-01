@@ -14,7 +14,7 @@ export default function ConfirmationModal({ booking, onClose }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4"
+        className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto bg-black/75 backdrop-blur-sm p-4 py-8"
         onClick={onClose}
       >
         <motion.div
@@ -23,11 +23,11 @@ export default function ConfirmationModal({ booking, onClose }) {
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ type: "spring", damping: 24, stiffness: 300 }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-md overflow-hidden rounded-3xl border border-emerald-500/30 bg-[#0c0f0d] p-7 glow-green"
+          className="scrollbar-thin relative w-full max-w-md max-h-[85vh] overflow-y-auto rounded-3xl border border-emerald-500/30 bg-[#0c0f0d] p-7 glow-green"
         >
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 rounded-lg p-1 text-white/40 hover:bg-white/10 hover:text-white"
+            className="sticky top-0 float-right -mt-1 -mr-1 rounded-lg bg-[#0c0f0d] p-1 text-white/40 hover:bg-white/10 hover:text-white"
           >
             <X className="h-5 w-5" />
           </button>
@@ -58,15 +58,15 @@ export default function ConfirmationModal({ booking, onClose }) {
               <Row icon={<Calendar className="h-4 w-4" />} label={t("conf.date")} value={booking.booking_date} />
               <Row icon={<Clock className="h-4 w-4" />} label={t("conf.time")} value={booking.end_time ? `${booking.start_time} – ${booking.end_time}` : booking.start_time} />
               <Row icon={<Gamepad2 className="h-4 w-4" />} label={t("conf.mode")} value={booking.mode} />
-<Row icon={<Gamepad2 className="h-4 w-4" />} label={t("conf.qty")} value={String(booking.quantity)} />
+              <Row icon={<Gamepad2 className="h-4 w-4" />} label={t("conf.qty")} value={String(booking.quantity)} />
             </div>
 
             {/* Total */}
             <div className="mt-5 flex w-full items-center justify-between rounded-2xl border border-emerald-500/20 bg-emerald-500/5 px-5 py-4">
               <span className="text-sm text-white/60">{t("conf.total")}</span>
               <span className="font-heading text-3xl font-bold text-emerald-400">
-  {booking.total_due} <span className="text-base text-white/50">DA</span>
-</span>
+                {booking.total_due} <span className="text-base text-white/50">DA</span>
+              </span>
             </div>
 
             <p className="mt-4 text-xs text-white/40">Payment pending at the venue. Please arrive 5 minutes before your slot.</p>
