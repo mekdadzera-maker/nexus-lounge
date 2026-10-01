@@ -54,6 +54,7 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
   const startDrag = (e, s, roomKey) => {
     if (!edit) return;
     e.preventDefault();
+    e.currentTarget.setPointerCapture?.(e.pointerId);
     const room = roomRefs.current[roomKey];
     if (!room) return;
     const rect = room.getBoundingClientRect();
@@ -65,6 +66,7 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
     const up = async (ev) => {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
       const x = Math.max(4, Math.min(96, ((ev.clientX - rect.left) / rect.width) * 100));
       const y = Math.max(8, Math.min(92, ((ev.clientY - rect.top) / rect.height) * 100));
       setPositions((p) => ({ ...p, [s.id]: { x, y } }));
@@ -75,6 +77,7 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
     };
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
   };
 
   return (
@@ -106,7 +109,7 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
                     const f = FURN[cat] || FURN.ps5;
                     const dot = s.status === "Maintenance" ? "bg-amber-400" : b ? "bg-blue-400" : "bg-emerald-300";
                     return (
-                      <div key={s.id} onPointerDown={(e) => startDrag(e, s, room.key)} style={{ left: `${pos.x}%`, top: `${pos.y}%` }} className={`absolute -translate-x-1/2 -translate-y-1/2 select-none ${edit ? "cursor-grab active:cursor-grabbing" : "cursor-default"} rounded-md`} title={s.name}>
+                      <div key={s.id} onPointerDown={(e) => startDrag(e, s, room.key)} style={{ left: `${pos.x}%`, top: `${pos.y}%` }} className={`absolute -translate-x-1/2 -translate-y-1/2 select-none touch-none ${edit ? "cursor-grab active:cursor-grabbing" : "cursor-default"} rounded-md`} title={s.name}>
                         <div className={`relative ${f.w} ${f.h} ${f.radius} border-2 flex flex-col items-center justify-center text-center`} style={{ backgroundColor: f.felt, borderColor: f.frame }}>
                           {edit && onEdit && (
                             <button onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); onEdit(s); }} className="absolute -left-1.5 -top-1.5 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full border border-white/30 bg-[#101012] text-white/80 hover:bg-white hover:text-black">
