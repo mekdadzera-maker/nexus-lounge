@@ -1,6 +1,14 @@
 import React from "react";
-import { Instagram, Phone, MapPin, Clock } from "lucide-react";
+import { Instagram, Facebook, Phone, MapPin, Clock } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+
+function TikTokIcon({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+      <path d="M16.6 5.82s.51.5 0 0A4.278 4.278 0 0 1 15.54 3h-3.09v12.4a2.592 2.592 0 0 1-2.59 2.5c-1.42 0-2.59-1.16-2.59-2.5 0-1.46 1.33-2.55 2.86-2.46V9.72c-3.13-.25-5.75 2.1-5.75 5.18 0 2.9 2.36 5.1 5.33 5.1 3.13 0 5.32-2.2 5.32-5.1V9.4a7.2 7.2 0 0 0 4.03 1.22V7.35c-1.1 0-1.95-.37-2.65-1.53z" />
+    </svg>
+  );
+}
 
 export default function Footer() {
   const { t } = useLang();
@@ -49,7 +57,15 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Instagram className="h-4 w-4 text-pink-400" />
-                <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-white">@nexus.lounge</a>
+                <a href="https://www.instagram.com/qlf_gaming0/" target="_blank" rel="noreferrer" className="hover:text-white">@qlf_gaming0</a>
+              </li>
+              <li className="flex items-center gap-3">
+                <Facebook className="h-4 w-4 text-blue-500" />
+                <a href="https://www.facebook.com/profile.php?id=61574316214792" target="_blank" rel="noreferrer" className="hover:text-white">Facebook</a>
+              </li>
+              <li className="flex items-center gap-3">
+                <TikTokIcon className="h-4 w-4 text-white" />
+                <a href="https://www.tiktok.com/@qlf_gaming0" target="_blank" rel="noreferrer" className="hover:text-white">@qlf_gaming0</a>
               </li>
             </ul>
           </div>
@@ -69,7 +85,3 @@ export default function Footer() {
         <div className="mt-12 border-t border-white/5 pt-6 text-center text-xs text-white/30">
           © {new Date().getFullYear()} NEXUS Lounge · {t("nav.location")}. {t("footer.rights")}
         </div>
-      </div>
-    </footer>
-  );
-}
