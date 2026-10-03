@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Phone, MapPin, Clock, Navigation, MessageCircle } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { getOpenStatus } from "@/lib/venue";
+import { Phone, MapPin, Clock, Navigation, MessageCircle, Instagram } from "lucide-react";
 
 const POSITION = "35.2204436,-0.6377016";
 const MAPS_DIR = "https://www.google.com/maps/dir/?api=1&destination=35.2204436,-0.6377016";
@@ -76,11 +77,21 @@ export default function ContactSection({ settings }) {
               <Navigation className="h-4 w-4" /> {t("contact.directions")}
             </a>
             <a
-              href="https://m.me/"
+              href="https://www.facebook.com/profile.php?id=61574316214792"
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
             >
+              <MessageCircle className="h-4 w-4" /> Facebook
+            </a>
+            <a
+              href="https://www.instagram.com/qlf_gaming0/"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              <Instagram className="h-4 w-4" /> Instagram
+            </a>
               <MessageCircle className="h-4 w-4" /> Facebook
             </a>
           </div>
