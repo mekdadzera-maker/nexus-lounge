@@ -1,9 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Phone, MapPin, Clock, Navigation, MessageCircle } from "lucide-react";
+import { Phone, MapPin, Clock, Navigation, MessageCircle, Instagram } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { getOpenStatus } from "@/lib/venue";
-import { Phone, MapPin, Clock, Navigation, MessageCircle, Instagram } from "lucide-react";
 
 const POSITION = "35.2204436,-0.6377016";
 const MAPS_DIR = "https://www.google.com/maps/dir/?api=1&destination=35.2204436,-0.6377016";
