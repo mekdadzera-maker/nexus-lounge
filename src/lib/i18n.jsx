@@ -149,7 +149,6 @@ const DICT = {
     "admin.context": "حجوزات العميل", "admin.replyPh": "اكتب رداً…", "admin.send": "إرسال", "admin.start": "البداية", "admin.end": "النهاية", "admin.duration": "المدة", "alarm.title": "انتهت الجلسة", "alarm.ended": "انتهى الوقت — هذه الجلسة منتهية.", "alarm.dismiss": "إغلاق", "alarm.openDashboard": "فتح اللوحة", "mb.title": "حجوزاتي", "mb.sub": "حجوزاتك وأكوادك وأوقات الجلسات.", "mb.empty": "لا توجد حجوزات بعد. احجز محطة للبدء.", "mb.upcoming": "القادمة", "mb.past": "الجلسات السابقة", "mb.contact": "التواصل",
     "contact.title": "تواصل معنا", "contact.subtitle": "لديك سؤال أو حجز جماعي أو ملاحظة؟ أرسل لنا رسالة وسنرد عليك.",
     "contact.sub": "مرّ بنا، اتصل مسبقاً، أو احصل على الاتجاهات مباشرة إلى بابنا.",
-    "contact.sub": "مرّ بنا، اتصل مسبقاً، أو احصل على الاتجاهات مباشرة إلى بابنا.",
     "contact.address": "69C6+5W سيدي بلعباس",
     "contact.callNow": "اتصل الآن",
     "contact.directions": "الاتجاهات",
@@ -185,3 +184,7 @@ export function LanguageProvider({ children }) {
 }
 
 export const useLang = () => useContext(LanguageContext);
+      </div>
+    </footer>
+  );
+}
