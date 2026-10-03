@@ -92,8 +92,6 @@ export default function ContactSection({ settings }) {
             >
               <Instagram className="h-4 w-4" /> Instagram
             </a>
-              <MessageCircle className="h-4 w-4" /> Facebook
-            </a>
           </div>
         </motion.div>
 
