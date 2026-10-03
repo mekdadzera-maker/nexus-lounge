@@ -85,3 +85,7 @@ export default function Footer() {
         <div className="mt-12 border-t border-white/5 pt-6 text-center text-xs text-white/30">
           © {new Date().getFullYear()} NEXUS Lounge · {t("nav.location")}. {t("footer.rights")}
         </div>
+      </div>
+    </footer>
+  );
+}
