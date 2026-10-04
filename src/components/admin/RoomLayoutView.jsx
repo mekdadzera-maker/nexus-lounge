@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { Pencil, Check, DoorOpen } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import { getCategory } from "@/lib/pricing";
+import { useLang } from "@/lib/i18n";
+import { localizedName } from "@/lib/stationI18n";
 
 const toMin = (t) => { if (!t) return null; const [h, m] = t.split(":").map(Number); return h * 60 + (m || 0); };
 const VIP_IDS = ["PS5-08", "PS5-09"];
@@ -26,6 +28,7 @@ function initPositions(stations) {
 }
 
 export default function RoomLayoutView({ stations, onEdit, onMoved }) {
+  const { t, lang } = useLang();
   const [bookings, setBookings] = useState([]);
   const [now, setNow] = useState(Date.now());
   const [edit, setEdit] = useState(false);
@@ -93,9 +96,9 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
   return (
     <div className="space-y-6" style={{ overscrollBehavior: "contain" }}>
       <div className="flex items-center justify-between">
-        <p className="text-sm text-white/50">{edit ? "Drag stations to reposition" : "Live floor status"}</p>
+        <p className="text-sm text-white/50">{edit ? t("adm.ly.drag") : t("adm.ly.liveStatus")}</p>
         <button onClick={() => setEdit((v) => !v)} className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition ${edit ? "bg-emerald-500 text-black hover:bg-emerald-400" : "border border-white/10 bg-white/5 text-white/70 hover:bg-white/10"}`}>
-          {edit ? <><Check className="h-3.5 w-3.5" /> Done</> : <><Pencil className="h-3.5 w-3.5" /> Edit Layout</>}
+          {edit ? <><Check className="h-3.5 w-3.5" /> {t("adm.ly.done")}</> : <><Pencil className="h-3.5 w-3.5" /> {t("adm.ly.edit")}</>}
         </button>
       </div>
 
@@ -117,9 +120,9 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
               <div key={room.key} className="relative">
                 <div ref={(el) => (roomRefs.current[room.key] = el)} className={`relative ${room.height} w-full overflow-visible rounded-md border-4`} style={{ borderColor: room.wall, backgroundColor: "#cbb499" }}>
                   <div className="pointer-events-none absolute inset-0" style={{ backgroundImage: "repeating-linear-gradient(90deg, rgba(60,40,20,0.07) 0 2px, transparent 2px 16px)" }} />
-                  <span className="pointer-events-none absolute left-1/2 top-2 -translate-x-1/2 text-[10px] font-semibold uppercase tracking-wider text-[#5d4037]/70">{room.label} · {room.area}</span>
+                  <span className="pointer-events-none absolute left-1/2 top-2 -translate-x-1/2 text-[10px] font-semibold uppercase tracking-wider text-[#5d4037]/70">{t("adm.room." + room.key)} · {room.area}</span>
                   <div className="absolute bottom-0 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-t bg-[#cbb499] px-3 py-1 text-[10px] font-medium text-[#5d4037] border-x-2 border-t-2" style={{ borderColor: room.wall }}>
-                    <DoorOpen className="h-3.5 w-3.5" /> Entrance
+                    <DoorOpen className="h-3.5 w-3.5" /> {t("adm.ly.entrance")}
                   </div>
                   {list.map((s) => {
                     const pos = positions[s.id] || { x: 10, y: 18 };
@@ -128,7 +131,7 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
                     const f = FURN[cat] || FURN.ps5;
                     const dot = s.status === "Maintenance" ? "bg-amber-400" : b ? "bg-blue-400" : "bg-emerald-300";
                     return (
-                      <div key={s.id} onPointerDown={(e) => startDrag(e, s, room.key)} style={{ left: `${pos.x}%`, top: `${pos.y}%` }} className={`absolute -translate-x-1/2 -translate-y-1/2 select-none touch-none ${edit ? "cursor-grab active:cursor-grabbing" : "cursor-default"} rounded-md`} title={s.name}>
+                      <div key={s.id} onPointerDown={(e) => startDrag(e, s, room.key)} style={{ left: `${pos.x}%`, top: `${pos.y}%` }} className={`absolute -translate-x-1/2 -translate-y-1/2 select-none touch-none ${edit ? "cursor-grab active:cursor-grabbing" : "cursor-default"} rounded-md`} title={localizedName(s, lang)}>
                         <div className={`relative ${f.w} ${f.h} ${f.radius} border-2 flex flex-col items-center justify-center text-center`} style={{ backgroundColor: f.felt, borderColor: f.frame }}>
                           {edit && onEdit && (
                             <button onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); onEdit(s); }} className="absolute -left-1.5 -top-1.5 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full border border-white/30 bg-[#101012] text-white/80 hover:bg-white hover:text-black">
@@ -137,7 +140,7 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
                           )}
                           <span className={`absolute right-1 top-1 h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full ${dot}`} />
                           <span className="text-[8px] sm:text-[9px] font-bold leading-none text-white/90">{s.id}</span>
-                          <span className="mt-0.5 text-[7px] sm:text-[8px] leading-none text-white/60">{s.status === "Maintenance" ? "Maint." : b ? (b.mode || "In use") : "Free"}</span>
+                          <span className="mt-0.5 text-[7px] sm:text-[8px] leading-none text-white/60">{s.status === "Maintenance" ? t("adm.ly.maint") : b ? (b.mode || t("adm.ly.inUse")) : t("adm.ly.free")}</span>
                           {savingId === s.id && <span className="absolute -right-1 -top-1 h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-400" />}
                         </div>
                       </div>
@@ -149,11 +152,11 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
           })}
         </div>
         <div className="mt-5 flex flex-wrap items-center gap-4 text-[10px] text-black/60">
-          <Legend className="bg-[#357A3F]" label="Billiard" />
-          <Legend className="bg-[#4A6D4A]" label="PS5 Sofa" />
-          <Legend className="bg-[#365c36]" label="Forza Pod" />
-          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-400" /> Free</span>
-          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-blue-400" /> In session</span>
+          <Legend className="bg-[#357A3F]" label={t("adm.ly.billiard")} />
+          <Legend className="bg-[#4A6D4A]" label={t("adm.ly.ps5")} />
+          <Legend className="bg-[#365c36]" label={t("adm.ly.forza")} />
+          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-400" /> {t("adm.ly.free")}</span>
+          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-blue-400" /> {t("adm.ly.inSession")}</span>
         </div>
       </div>
     </div>
