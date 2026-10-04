@@ -1,8 +1,6 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { Phone, MapPin, Clock, Navigation, MessageCircle, Instagram } from "lucide-react";
+import { Instagram, Facebook, Phone, MapPin, Clock } from "lucide-react";
 import { useLang } from "@/lib/i18n";
-import { getOpenStatus } from "@/lib/venue";
 
 function TikTokIcon({ className }) {
   return (
@@ -12,107 +10,79 @@ function TikTokIcon({ className }) {
   );
 }
 
-const POSITION = "35.2204436,-0.6377016";
-const MAPS_DIR = "https://www.google.com/maps/dir/?api=1&destination=35.2204436,-0.6377016";
-const MAPS_EMBED = `https://maps.google.com/maps?q=NEXUS+Lounge@${POSITION}&z=17&output=embed`;
-
-export default function ContactSection({ settings }) {
+export default function Footer() {
   const { t } = useLang();
-  const openingTime = settings?.opening_time || "10:00";
-  const closingTime = settings?.closing_time || "03:00";
-  const closingLabel = settings?.display_closing_string || "3 AM";
-  const { open } = getOpenStatus(openingTime, closingTime);
-
-  const rows = [
-    { icon: <Phone className="h-5 w-5 text-blue-400" />, label: t("footer.phone"), value: "0791744734", href: "tel:0791744734" },
-    { icon: <MapPin className="h-5 w-5 text-emerald-400" />, label: t("footer.loc"), value: t("contact.address") },
-    {
-      icon: <Clock className={`h-5 w-5 ${open ? "text-emerald-400" : "text-red-400"}`} />,
-      label: t("footer.hours"),
-      value: `${openingTime} – ${closingLabel}`,
-    },
-  ];
-
-  const links = [
-    { icon: <Phone className="h-4 w-4" />, label: t("contact.callNow"), href: "tel:0791744734", primary: true },
-    { icon: <Navigation className="h-4 w-4" />, label: t("contact.directions"), href: MAPS_DIR },
-    { icon: <MessageCircle className="h-4 w-4" />, label: "Facebook", href: "https://www.facebook.com/profile.php?id=61574316214792" },
-    { icon: <Instagram className="h-4 w-4" />, label: "Instagram", href: "https://www.instagram.com/qlf_gaming0/" },
-    { icon: <TikTokIcon className="h-4 w-4" />, label: "TikTok", href: "https://www.tiktok.com/@qlf_gaming0" },
-  ];
-
   return (
-    <section id="contact" className="mx-auto max-w-7xl px-6 py-20">
-      <div className="mb-10 text-center">
-        <p className="text-sm font-semibold uppercase tracking-widest text-blue-400">{t("footer.contact")}</p>
-        <h2 className="mt-2 font-heading text-4xl font-bold text-white sm:text-5xl">{t("contact.title")}</h2>
-        <p className="mt-3 text-white/50">{t("contact.sub")}</p>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Info card */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8"
-        >
-          <div className="space-y-5">
-            {rows.map((r) => (
-              <div key={r.label} className="flex items-start gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-                  {r.icon}
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-white/40">{r.label}</p>
-                  {r.href ? (
-                    <a href={r.href} className="text-lg font-semibold text-white hover:text-blue-400">{r.value}</a>
-                  ) : (
-                    <p className="text-lg font-semibold text-white">{r.value}</p>
-                  )}
-                </div>
-              </div>
-            ))}
+    <footer className="border-t border-white/10 bg-[#08080a]">
+      <div className="mx-auto max-w-7xl px-6 py-14">
+        <div className="grid gap-10 md:grid-cols-3">
+          <div>
+            <svg viewBox="0 0 980 980" className="h-16 w-16" xmlns="http://www.w3.org/2000/svg">
+              <path
+                fillRule="evenodd"
+                fill="#FFFFFF"
+                d="M 366,303 L 226,395 L 226,550 L 276,594 L 278,624 L 281,629 L 313,646 L 334,637 L 365,658 Z
+                   M 319,394 L 320,395 L 320,547 L 319,548 L 311,548 L 309,546 L 309,536 L 307,534 L 298,515 L 295,516 L 287,522 L 273,522 L 272,521 L 272,427 L 276,423 L 286,417 L 289,414 L 303,405 L 313,397 Z"
+              />
+              <path
+                fill="#FFFFFF"
+                d="M 443,244 L 398,279 L 398,679 L 487,735 L 576,683 L 576,567 L 531,567 L 529,654 L 485,678 L 443,651 Z"
+              />
+              <path
+                fill="#FFFFFF"
+                d="M 608,297 L 609,669 L 654,641 L 654,511 L 691,509 L 691,457 L 654,455 L 654,400 L 656,399 L 705,435 L 706,471 L 753,471 L 753,402 Z"
+              />
+            </svg>
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/50">
+              {t("footer.tag")}
+            </p>
           </div>
 
-          <div className="mt-7 flex flex-col gap-3">
-            {links.map((l) => (
-              <a
-                key={l.label}
-                href={l.href}
-                target={l.href.startsWith("tel:") ? undefined : "_blank"}
-                rel={l.href.startsWith("tel:") ? undefined : "noreferrer"}
-                className={`flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition ${
-                  l.primary
-                    ? "bg-emerald-500 text-black hover:bg-emerald-400"
-                    : "border border-white/15 bg-white/5 text-white hover:bg-white/10"
-                }`}
-              >
-                {l.icon} {l.label}
-              </a>
-            ))}
+          <div>
+            <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white/40">{t("footer.contact")}</h4>
+            <ul className="space-y-3 text-sm text-white/70">
+              <li className="flex items-center gap-3">
+                <Phone className="h-4 w-4 text-blue-400" />
+                <a href="tel:0791744734" className="hover:text-white">0791 74 47 34</a>
+              </li>
+              <li className="flex items-center gap-3">
+                <MapPin className="h-4 w-4 text-emerald-400" />
+                <span>69C6+5W Sidi Bel Abbès</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Clock className="h-4 w-4 text-amber-400" />
+                <span>{t("hero.open")} · {t("hero.closes")} 4 AM</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Instagram className="h-4 w-4 text-pink-400" />
+                <a href="https://www.instagram.com/qlf_gaming0/" target="_blank" rel="noreferrer" className="hover:text-white">@qlf_gaming0</a>
+              </li>
+              <li className="flex items-center gap-3">
+                <Facebook className="h-4 w-4 text-blue-500" />
+                <a href="https://www.facebook.com/profile.php?id=61574316214792" target="_blank" rel="noreferrer" className="hover:text-white">Facebook</a>
+              </li>
+              <li className="flex items-center gap-3">
+                <TikTokIcon className="h-4 w-4 text-white" />
+                <a href="https://www.tiktok.com/@qlf_gaming0" target="_blank" rel="noreferrer" className="hover:text-white">@qlf_gaming0</a>
+              </li>
+            </ul>
           </div>
-        </motion.div>
 
-        {/* Map */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="h-[480px] overflow-hidden rounded-2xl border border-white/10 bg-white/5 lg:h-auto"
-        >
-          <iframe
-            title="NEXUS Lounge location"
-            src={MAPS_EMBED}
-            className="h-full w-full grayscale invert-[0.92] hue-rotate-180 contrast-[0.95]"
-            style={{ border: 0 }}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        </motion.div>
+          <div>
+            <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white/40">{t("footer.features")}</h4>
+            <ul className="space-y-2.5 text-sm text-white/70">
+              <li>🎱 Upper Level — Billiards Lounge</li>
+              <li>🎮 Lower Level — Gaming Salle</li>
+              <li>🎱 2 Billiards Tables</li>
+              <li>🕹️ 9 PS5 Sofa Stations</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-12 border-t border-white/5 pt-6 text-center text-xs text-white/30">
+          © {new Date().getFullYear()} NEXUS Lounge · {t("nav.location")}. {t("footer.rights")}
+        </div>
       </div>
-    </section>
+    </footer>
   );
 }
