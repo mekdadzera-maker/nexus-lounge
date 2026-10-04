@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, Clock, User, Phone, CheckCircle2, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
+import { useLang } from "@/lib/i18n";
 
 export default function BookingsPanel() {
+  const { t } = useLang();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
@@ -39,7 +41,7 @@ export default function BookingsPanel() {
   if (bookings.length === 0) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-10 text-center text-white/50">
-        No bookings yet.
+        {t("adm.bk.empty")}
       </div>
     );
   }
@@ -58,7 +60,7 @@ export default function BookingsPanel() {
               </span>
               {b.status === "Completed" && (
                 <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-semibold text-emerald-300">
-                  Completed
+                  {t("adm.bk.completed")}
                 </span>
               )}
             </div>
@@ -77,7 +79,7 @@ export default function BookingsPanel() {
               </span>
             </div>
             <div className="text-sm text-white/50">
-              {b.mode} · Qty {b.quantity} · <span className="font-semibold text-white">{b.total_due} DA</span>
+              {b.mode} · {t("adm.bk.qty")} {b.quantity} · <span className="font-semibold text-white">{b.total_due} DA</span>
             </div>
           </div>
 
@@ -92,7 +94,7 @@ export default function BookingsPanel() {
               ) : (
                 <CheckCircle2 className="h-4 w-4" />
               )}
-              Mark Completed
+              {t("adm.bk.markDone")}
             </button>
           )}
         </div>
