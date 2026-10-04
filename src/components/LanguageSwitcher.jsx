@@ -24,7 +24,7 @@ export default function LanguageSwitcher({ compact = false }) {
         {LANGS.find((l) => l.code === lang)?.label}
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-36 overflow-hidden rounded-xl border border-white/10 bg-[#101012] py-1 shadow-2xl">
+        <div className="absolute end-0 z-50 mt-2 w-36 overflow-hidden rounded-xl border border-white/10 bg-[#101012] py-1 shadow-2xl">
           {LANGS.map((l) => (
             <button
               key={l.code}
