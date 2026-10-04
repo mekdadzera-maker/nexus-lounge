@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { ADMIN_DICT } from "./adminI18n"
 
 const DICT = {
   en: {
