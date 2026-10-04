@@ -24,4 +24,55 @@ export default function ContactSection({ settings }) {
   const { open } = getOpenStatus(openingTime, closingTime);
 
   const rows = [
-    { icon: <Phone className="h-5 w-5 text-blue-400" />, label: t("footer.phone"),
+    { icon: <Phone className="h-5 w-5 text-blue-400" />, label: t("footer.phone"), value: "0791744734", href: "tel:0791744734" },
+    { icon: <MapPin className="h-5 w-5 text-emerald-400" />, label: t("footer.loc"), value: t("contact.address") },
+    {
+      icon: <Clock className={`h-5 w-5 ${open ? "text-emerald-400" : "text-red-400"}`} />,
+      label: t("footer.hours"),
+      value: `${openingTime} – ${closingLabel}`,
+    },
+  ];
+
+  const links = [
+    { icon: <Phone className="h-4 w-4" />, label: t("contact.callNow"), href: "tel:0791744734", primary: true },
+    { icon: <Navigation className="h-4 w-4" />, label: t("contact.directions"), href: MAPS_DIR },
+    { icon: <MessageCircle className="h-4 w-4" />, label: "Facebook", href: "https://www.facebook.com/profile.php?id=61574316214792" },
+    { icon: <Instagram className="h-4 w-4" />, label: "Instagram", href: "https://www.instagram.com/qlf_gaming0/" },
+    { icon: <TikTokIcon className="h-4 w-4" />, label: "TikTok", href: "https://www.tiktok.com/@qlf_gaming0" },
+  ];
+
+  return (
+    <section id="contact" className="mx-auto max-w-7xl px-6 py-20">
+      <div className="mb-10 text-center">
+        <p className="text-sm font-semibold uppercase tracking-widest text-blue-400">{t("footer.contact")}</p>
+        <h2 className="mt-2 font-heading text-4xl font-bold text-white sm:text-5xl">{t("contact.title")}</h2>
+        <p className="mt-3 text-white/50">{t("contact.sub")}</p>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8"
+        >
+          <div className="space-y-5">
+            {rows.map((r) => (
+              <div key={r.label} className="flex items-start gap-4">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                  {r.icon}
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-wider text-white/40">{r.label}</p>
+                  {r.href ? (
+                    <a href={r.href} className="text-lg font-semibold text-white hover:text-blue-400">{r.value}</a>
+                  ) : (
+                    <p className="text-lg font-semibold text-white">{r.value}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-7 flex flex
