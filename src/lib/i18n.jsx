@@ -160,6 +160,7 @@ const DICT = {
   },
 };
 
+Object.keys(ADMIN_DICT).forEach((l) => Object.assign(DICT[l], ADMIN_DICT[l]));
 export const LANGS = [
   { code: "en", label: "EN", dir: "ltr" },
   { code: "fr", label: "FR", dir: "ltr" },
