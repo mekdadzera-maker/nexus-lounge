@@ -2,15 +2,17 @@ import React, { useState, useEffect, useRef } from "react";
 import { Bell, Play, Upload, Save, Loader2, Check } from "lucide-react";
 import { playAlarm } from "@/lib/alarm";
 import { supabase } from "@/lib/supabaseClient";
+import { useLang } from "@/lib/i18n";
 
 const TRACKS = [
-  { id: "chime", name: "Chime Alert" },
-  { id: "siren", name: "Cyber Siren" },
-  { id: "arcade", name: "Retro Arcade" },
+  { id: "chime", key: "adm.alarm.chime" },
+  { id: "siren", key: "adm.alarm.siren" },
+  { id: "arcade", key: "adm.alarm.arcade" },
 ];
 const inputCls = "w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white outline-none focus:border-blue-500";
 
 export default function AlarmPanel() {
+  const { t } = useLang();
   const [settings, setSettings] = useState(null);
   const [selected, setSelected] = useState("chime");
   const [uploading, setUploading] = useState(false);
@@ -57,35 +59,35 @@ export default function AlarmPanel() {
     }
   };
 
-  if (!settings) return <p className="text-white/50">Loading…</p>;
+  if (!settings) return <p className="text-white/50">{t("adm.loading")}</p>;
 
   return (
     <div className="max-w-xl">
       <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-        <h2 className="flex items-center gap-2 font-heading text-lg font-bold text-white"><Bell className="h-5 w-5 text-blue-400" /> Alarm Sound</h2>
+        <h2 className="flex items-center gap-2 font-heading text-lg font-bold text-white"><Bell className="h-5 w-5 text-blue-400" /> {t("admin.tab.alarm")}</h2>
 
-        <label className="mt-5 mb-1.5 block text-xs font-medium uppercase tracking-wider text-white/40">Select Alarm Sound Track</label>
+        <label className="mt-5 mb-1.5 block text-xs font-medium uppercase tracking-wider text-white/40">{t("admin.track")}</label>
         <div className="flex gap-2">
           <select value={selected.startsWith("http") ? "__custom__" : selected} onChange={(e) => { if (e.target.value !== "__custom__") setSelected(e.target.value); }} className={inputCls}>
-            {TRACKS.map((tr) => <option key={tr.id} value={tr.id} className="bg-[#101012]">{tr.name}</option>)}
-            {selected.startsWith("http") && <option value="__custom__" className="bg-[#101012]">Uploaded file</option>}
+            {TRACKS.map((tr) => <option key={tr.id} value={tr.id} className="bg-[#101012]">{t(tr.key)}</option>)}
+            {selected.startsWith("http") && <option value="__custom__" className="bg-[#101012]">{t("adm.alarm.uploadedFile")}</option>}
           </select>
           <button onClick={() => preview(selected)} className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white hover:bg-white/10">
-            <Play className="h-4 w-4" /> Preview
+            <Play className="h-4 w-4" /> {t("adm.alarm.preview")}
           </button>
         </div>
 
         <button onClick={() => fileRef.current?.click()} className="mt-4 inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white hover:bg-white/10">
-          <Upload className="h-4 w-4" /> {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Upload Custom MP3"}
+          <Upload className="h-4 w-4" /> {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("admin.upload")}
         </button>
         <input ref={fileRef} type="file" accept="audio/mpeg,audio/wav,.mp3,.wav" onChange={onUpload} className="hidden" />
-        {selected.startsWith("http") && <p className="mt-2 truncate text-xs text-emerald-400">Uploaded: {selected}</p>}
+        {selected.startsWith("http") && <p className="mt-2 truncate text-xs text-emerald-400">{t("admin.uploaded")}: {selected}</p>}
 
         <div className="mt-5">
           <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-[#08080a] disabled:opacity-50">
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} {t("admin.save")}
           </button>
-          {saved && <span className="ml-3 inline-flex items-center gap-1 text-sm text-emerald-400"><Check className="h-4 w-4" /> Saved</span>}
+          {saved && <span className="ms-3 inline-flex items-center gap-1 text-sm text-emerald-400"><Check className="h-4 w-4" /> {t("admin.saved")}</span>}
         </div>
       </div>
     </div>
