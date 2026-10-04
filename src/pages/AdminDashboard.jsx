@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { LayoutDashboard, CalendarRange, Clock, Tag, Bell, MessageSquare, Monitor, ArrowLeft, ShieldAlert } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { useLang } from "@/lib/i18n";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import OperatingHoursPanel from "@/components/admin/OperatingHoursPanel";
 import PricingPanel from "@/components/admin/PricingPanel";
 import AlarmPanel from "@/components/admin/AlarmPanel";
@@ -27,15 +28,15 @@ export default function AdminDashboard() {
           <h1 className="mt-4 font-heading text-2xl font-bold text-white">{t("admin.denied")}</h1>
           <p className="mt-2 text-white/50">{t("admin.deniedSub")}</p>
           <Link to="/" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-[#08080a]">
-            <ArrowLeft className="h-4 w-4" /> {t("admin.back")}
+            <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> {t("admin.back")}
           </Link>
         </div>
       </div>
     );
   }
   const tabs = [
-    { key: "bookings", label: "Bookings", icon: CalendarRange },
-    { key: "stations", label: "Stations", icon: Monitor },
+    { key: "bookings", label: t("admin.tab.bookings"), icon: CalendarRange },
+    { key: "stations", label: t("admin.tab.stations"), icon: Monitor },
     { key: "scheduler", label: t("admin.tab.scheduler"), icon: CalendarRange },
     { key: "hours", label: t("admin.tab.hours"), icon: Clock },
     { key: "pricing", label: t("admin.tab.pricing"), icon: Tag },
@@ -51,9 +52,12 @@ export default function AdminDashboard() {
             <LayoutDashboard className="h-6 w-6 text-blue-400" />
             <h1 className="font-heading text-xl font-bold text-white">{t("admin.title")}</h1>
           </div>
-          <Link to="/" className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/70 hover:bg-white/10">
-            <ArrowLeft className="h-4 w-4" /> {t("admin.back")}
-          </Link>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <Link to="/" className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/70 hover:bg-white/10">
+              <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> {t("admin.back")}
+            </Link>
+          </div>
         </div>
         <div className="mx-auto max-w-7xl px-6">
           <div className="flex gap-1 overflow-x-auto pb-2">
