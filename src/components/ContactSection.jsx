@@ -75,4 +75,42 @@ export default function ContactSection({ settings }) {
             ))}
           </div>
 
-          <div className="mt-7 flex flex
+          <div className="mt-7 flex flex-col gap-3">
+            {links.map((l) => (
+              <a
+                key={l.label}
+                href={l.href}
+                target={l.href.startsWith("tel:") ? undefined : "_blank"}
+                rel={l.href.startsWith("tel:") ? undefined : "noreferrer"}
+                className={`flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition ${
+                  l.primary
+                    ? "bg-emerald-500 text-black hover:bg-emerald-400"
+                    : "border border-white/15 bg-white/5 text-white hover:bg-white/10"
+                }`}
+              >
+                {l.icon} {l.label}
+              </a>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="h-[480px] overflow-hidden rounded-2xl border border-white/10 bg-white/5 lg:h-auto"
+        >
+          <iframe
+            title="NEXUS Lounge location"
+            src={MAPS_EMBED}
+            className="h-full w-full grayscale invert-[0.92] hue-rotate-180 contrast-[0.95]"
+            style={{ border: 0 }}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </motion.div>
+      </div>
+    </section>
+  );
+}
