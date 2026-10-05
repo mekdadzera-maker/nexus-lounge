@@ -50,8 +50,8 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
 
   useEffect(() => {
     const load = async () => {
-      const today = new Date().toISOString().slice(0, 10);
-      const { data } = await supabase.from("bookings").select("*").eq("booking_date", today);
+    const today = localDateStr();
+    const { data } = await supabase.from("bookings").select("*").in("booking_date", [shiftDate(today, -1), today]).neq("status", "Completed");
       setBookings(data || []);
     };
     load();
