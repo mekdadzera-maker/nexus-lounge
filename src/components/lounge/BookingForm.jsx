@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Calendar, Clock, User, Phone, AlertCircle, Loader2, Check, Minus, Plus, Facebook } from "lucide-react";
-import { generateReservationCode } from "@/lib/pricing";
+import { generateReservationCode, computeEndTime } from "@/lib/pricing";
 import { isWithinOpenHours } from "@/lib/venue";
 import { useLang } from "@/lib/i18n";
 import { supabase } from "@/lib/supabaseClient";
@@ -19,15 +19,6 @@ export default function BookingForm({ station, tiers, settings, user, onClose, o
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // Guard against the mobile "click-through" issue: the tap that opens this
-  // modal can also register as a click on the backdrop right after it mounts,
-  // because touch devices dispatch the synthetic click event slightly after
-  // touchend -- by which point the backdrop already exists under the finger.
-  // A fixed timeout is unreliable (Chrome's delayed click can land later than
-  // any guess under load), so instead we wait two animation frames, which
-  // reliably clears the current input's event queue regardless of device
-  // speed, and we also require the press to have started on the backdrop
-  // itself (not just ended there) before allowing it to close the modal.
   const [canClose, setCanClose] = useState(false);
   const pressStartedOnBackdropRef = React.useRef(false);
   useEffect(() => {
@@ -90,6 +81,7 @@ export default function BookingForm({ station, tiers, settings, user, onClose, o
           contact_value: contactValue.trim(),
           booking_date: date,
           start_time: startTime,
+          end_time: computeEndTime(startTime, selectedTier.duration_minutes, quantity),
           mode: selectedTier.label,
           quantity: quantity,
           total_due: total,
