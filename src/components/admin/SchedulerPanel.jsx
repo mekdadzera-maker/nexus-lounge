@@ -78,7 +78,8 @@ export default function SchedulerPanel() {
                   <div className="relative h-14" style={{ width: widthPx }}>
                     {rowBks.map((b) => {
                       const start = toMin(b.start_time);
-                      const end = b.end_time ? toMin(b.end_time) : start + DEFAULT_BLOCK_MIN * (b.quantity || 1);
+                      let end = b.end_time ? toMin(b.end_time) : start + DEFAULT_BLOCK_MIN * (b.quantity || 1);
+                      if (b.end_time && end <= start) end += 1440;
                       const left = ((start - START_HOUR * 60) / 60) * PX_PER_HOUR;
                       const w = Math.max(20, ((end - start) / 60) * PX_PER_HOUR);
                       return (
