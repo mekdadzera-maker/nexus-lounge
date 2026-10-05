@@ -86,6 +86,7 @@ export default function AdminDashboard() {
         {tab === "alarm" && <AlarmPanel />}
         {tab === "chat" && <SupportHub />}
       </div>
+     <SessionAlarmNotifier />
     </div>
   );
 }
