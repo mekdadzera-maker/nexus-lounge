@@ -61,8 +61,9 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
   useEffect(() => { const id = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(id); }, []);
 
   const nowMin = (() => { const d = new Date(now); return d.getHours() * 60 + d.getMinutes(); })();
-  const activeBooking = (sid) => bookings.find((b) => b.station_id === sid && toMin(b.start_time) <= nowMin);
-
+  const todayStr = localDateStr();
+  const activeBooking = (sid) => bookings.find((b) => b.station_id === sid && isRunning(b, todayStr, nowMin));
+  
   useEffect(() => {
     setPositions((p) => {
       const next = { ...p };
