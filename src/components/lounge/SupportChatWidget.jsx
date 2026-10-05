@@ -20,6 +20,8 @@ export default function SupportChatWidget() {
   const mediaRef = useRef(null);
   const chunksRef = useRef([]);
   const timerRef = useRef(null);
+  const loadRef = useRef(null);
+  const sigRef = useRef("");
 
   useEffect(() => {
     const saved = localStorage.getItem("nexus_chat_room");
@@ -32,28 +34,23 @@ export default function SupportChatWidget() {
   }, []);
 
   useEffect(() => {
-    if (!roomId) return;
+    if (!roomId || !open) return;
+    let cancelled = false;
     const loadMessages = async () => {
-      const { data } = await supabase
-        .from("support_messages")
-        .select("*")
-        .eq("chat_room_id", roomId)
-        .order("created_at", { ascending: true });
-      setMessages(data || []);
-      scrollBottom();
-    };
-    loadMessages();
-
-    const channel = supabase
-      .channel(`widget_messages_${roomId}`)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "support_messages", filter: `chat_room_id=eq.${roomId}` }, (payload) => {
-        setMessages((prev) => (prev.some((m) => m.id === payload.new.id) ? prev : [...prev, payload.new]));
+      const { data } = await supabase.rpc("chat_get_messages", { p_room: roomId });
+      if (cancelled || !data) return;
+      const sig = data.length + ":" + (data[data.length - 1]?.id || "");
+      if (sig !== sigRef.current) {
+        sigRef.current = sig;
+        setMessages(data);
         scrollBottom();
-      })
-      .subscribe();
-
-    return () => supabase.removeChannel(channel);
-  }, [roomId]);
+      }
+    };
+    loadRef.current = loadMessages;
+    loadMessages();
+    const id = setInterval(loadMessages, 3000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, [roomId, open]);
 
   useEffect(() => () => stopRecording(), []);
 
@@ -61,15 +58,11 @@ export default function SupportChatWidget() {
 
   const startChat = async () => {
     if (!name.trim()) return;
-    const { data, error } = await supabase
-      .from("chat_rooms")
-      .insert({ customer_name: name.trim(), is_unread_by_admin: true })
-      .select()
-      .single();
-    if (!error) {
-      setRoomId(data.id);
+    const { data, error } = await supabase.rpc("chat_start", { p_name: name.trim() });
+    if (!error && data) {
+      setRoomId(data);
       setStarted(true);
-      localStorage.setItem("nexus_chat_room", JSON.stringify({ id: data.id, name: name.trim() }));
+      localStorage.setItem("nexus_chat_room", JSON.stringify({ id: data, name: name.trim() }));
     }
   };
 
@@ -77,9 +70,9 @@ export default function SupportChatWidget() {
     if (!text.trim() || !roomId) return;
     const content = text.trim();
     setText("");
-    await supabase.from("support_messages").insert({ chat_room_id: roomId, sender_role: "Customer", message_text: content });
-    await supabase.from("chat_rooms").update({ last_message_at: new Date().toISOString(), last_message_preview: content.slice(0, 80), is_unread_by_admin: true }).eq("id", roomId);
-    scrollBottom();
+    const { error } = await supabase.rpc("chat_send", { p_room: roomId, p_text: content });
+    if (error) { setText(content); return; }
+    loadRef.current?.();
   };
 
   const uploadAndSend = async (file, kind) => {
@@ -92,17 +85,16 @@ export default function SupportChatWidget() {
       if (upErr) throw upErr;
       const { data: pub } = supabase.storage.from("chat-attachments").getPublicUrl(path);
       const caption = kind === "audio" ? "🎤 Voice message" : `📎 ${file.name}`;
-      await supabase.from("support_messages").insert({
-        chat_room_id: roomId,
-        sender_role: "Customer",
-        message_text: caption,
-        message_type: kind,
-        file_url: pub.publicUrl,
-        file_name: file.name,
-        file_mime: file.type,
+      const { error: sendErr } = await supabase.rpc("chat_send", {
+        p_room: roomId,
+        p_text: caption,
+        p_type: kind,
+        p_file_url: pub.publicUrl,
+        p_file_name: file.name,
+        p_file_mime: file.type,
       });
-      await supabase.from("chat_rooms").update({ last_message_at: new Date().toISOString(), last_message_preview: caption.slice(0, 80), is_unread_by_admin: true }).eq("id", roomId);
-      scrollBottom();
+      if (sendErr) throw sendErr;
+      loadRef.current?.();
     } catch {
       // upload failed silently; could add a toast here later
     } finally {
@@ -193,42 +185,4 @@ export default function SupportChatWidget() {
                 </button>
 
                 {recording ? (
-                  <div className="flex flex-1 items-center gap-2 rounded-xl border border-red-500/40 bg-red-500/10 px-3 py-2.5">
-                    <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-red-500" />
-                    <span className="text-sm font-medium text-red-200">REC {fmtTime(recSeconds)}</span>
-                    <button onClick={stopRecording} className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg bg-red-500 text-white transition hover:bg-red-400" aria-label="Stop recording">
-                      <Square className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <input
-                      value={text}
-                      onChange={(e) => setText(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && send()}
-                      placeholder="Type a message..."
-                      className="min-w-0 flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white placeholder-white/30 outline-none focus:border-blue-500"
-                    />
-                    <button onClick={startRecording} disabled={uploading} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white/60 transition hover:bg-white/10 hover:text-white disabled:opacity-40" aria-label="Record voice message">
-                      <Mic className="h-5 w-5" />
-                    </button>
-                  </>
-                )}
-
-                {!recording && (
-                  <button onClick={send} disabled={uploading} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500 text-white transition hover:bg-blue-400 disabled:opacity-40">
-                    {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                  </button>
-                )}
-              </div>
-            </>
-          )}
-        </div>
-      ) : (
-        <button onClick={() => setOpen(true)} className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-500 text-white shadow-2xl transition hover:bg-blue-400 hover:scale-105">
-          <MessageCircle className="h-6 w-6" />
-        </button>
-      )}
-    </div>
-  );
-}
+                  <div className="flex flex-1 items-center gap-2 rounded-xl
