@@ -6,6 +6,18 @@ import { useLang } from "@/lib/i18n";
 import { localizedName } from "@/lib/stationI18n";
 
 const toMin = (t) => { if (!t) return null; const [h, m] = t.split(":").map(Number); return h * 60 + (m || 0); };
+const pad = (n) => String(n).padStart(2, "0");
+const localDateStr = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const shiftDate = (s, days) => { const [y, m, d] = s.split("-").map(Number); return localDateStr(new Date(y, m - 1, d + days)); };
+// true only while the session is running: start <= now < end (also handles sessions that cross midnight)
+function isRunning(b, today, nowMin) {
+  const start = toMin(b.start_time);
+  if (start == null) return false;
+  const base = b.booking_date === today ? 0 : -1440;
+  let end = b.end_time ? toMin(b.end_time) : start + 30 * (b.quantity || 1);
+  if (b.end_time && end <= start) end += 1440;
+  return nowMin >= base + start && nowMin < base + end;
+}
 const VIP_IDS = ["PS5-08", "PS5-09"];
 const ROOMS = [
   { key: "Upper", label: "Billiards", test: (s) => s.level === "Billiards", w: "9.9 m", h: "6.2 m", area: "56.9 m²", wall: "#2ecc71", height: "h-64" },
