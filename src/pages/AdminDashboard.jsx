@@ -1,3 +1,4 @@
+import SessionAlarmNotifier from "@/components/lounge/SessionAlarmNotifier";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { LayoutDashboard, CalendarRange, Clock, Tag, Bell, MessageSquare, Monitor, ArrowLeft, ShieldAlert } from "lucide-react";
