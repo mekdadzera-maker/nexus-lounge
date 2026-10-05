@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { CalendarRange, Plus, Loader2, X, Trash2 } from "lucide-react";
-import { tiersForStation } from "@/lib/pricing";
+import { tiersForStation, computeEndTime } from "@/lib/pricing";
 import { supabase } from "@/lib/supabaseClient";
 import { useLang } from "@/lib/i18n";
 import { localizedName } from "@/lib/stationI18n";
@@ -78,8 +78,7 @@ export default function SchedulerPanel() {
                   <div className="relative h-14" style={{ width: widthPx }}>
                     {rowBks.map((b) => {
                       const start = toMin(b.start_time);
-                      const durationMin = DEFAULT_BLOCK_MIN * (b.quantity || 1);
-                      const end = start + durationMin;
+                      const end = b.end_time ? toMin(b.end_time) : start + DEFAULT_BLOCK_MIN * (b.quantity || 1);
                       const left = ((start - START_HOUR * 60) / 60) * PX_PER_HOUR;
                       const w = Math.max(20, ((end - start) / 60) * PX_PER_HOUR);
                       return (
@@ -134,6 +133,7 @@ function WalkinModal({ data, tiers, date, onClose, onCreated }) {
       contact_value: "",
       booking_date: date,
       start_time: time,
+      end_time: computeEndTime(time, tier.duration_minutes, qty),
       mode: tier.label,
       quantity: qty,
       total_due: (tier.price || 0) * qty,
@@ -190,4 +190,4 @@ function ClearModal({ booking, stationName, onClose, onClear }) {
       </div>
     </div>
   );
-          }
+                }
