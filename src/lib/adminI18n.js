@@ -12,7 +12,7 @@ export const ADMIN_DICT = {
     "adm.alarm.chime": "Chime Alert", "adm.alarm.siren": "Cyber Siren", "adm.alarm.arcade": "Retro Arcade",
     "adm.alarm.uploadedFile": "Uploaded file", "adm.alarm.preview": "Preview",
 
-    "adm.pr.addRate": "Add Rate", "adm.pr.namePh": "Name (e.g. 1 Game)", "adm.pr.pricePh": "Price (DA)",
+    "adm.pr.addRate": "Add Rate", "adm.pr.namePh": "Name (e.g. 1 Game)", "adm.pr.pricePh": "Price (DA)", "adm.pr.durationPh": "Duration (minutes)",
 
     "adm.cat.PS5": "PS5", "adm.cat.Forza": "Forza", "adm.cat.Billiards": "Billiards",
     "adm.level.Gaming": "Gaming", "adm.level.Billiards": "Billiards",
@@ -42,7 +42,7 @@ export const ADMIN_DICT = {
     "adm.alarm.chime": "Alerte carillon", "adm.alarm.siren": "Sirène cyber", "adm.alarm.arcade": "Arcade rétro",
     "adm.alarm.uploadedFile": "Fichier importé", "adm.alarm.preview": "Écouter",
 
-    "adm.pr.addRate": "Ajouter un tarif", "adm.pr.namePh": "Nom (ex. 1 partie)", "adm.pr.pricePh": "Prix (DA)",
+    "adm.pr.addRate": "Ajouter un tarif", "adm.pr.namePh": "Nom (ex. 1 partie)", "adm.pr.pricePh": "Prix (DA)", "adm.pr.durationPh": "Durée (minutes)",
 
     "adm.cat.PS5": "PS5", "adm.cat.Forza": "Forza", "adm.cat.Billiards": "Billard",
     "adm.level.Gaming": "Jeux", "adm.level.Billiards": "Billard",
@@ -72,8 +72,8 @@ export const ADMIN_DICT = {
     "adm.alarm.chime": "تنبيه رنين", "adm.alarm.siren": "صفارة سايبر", "adm.alarm.arcade": "أركيد كلاسيكي",
     "adm.alarm.uploadedFile": "ملف مرفوع", "adm.alarm.preview": "معاينة",
 
-    "adm.pr.addRate": "إضافة سعر", "adm.pr.namePh": "الاسم (مثال: لعبة واحدة)", "adm.pr.pricePh": "السعر (DA)",
-
+    "adm.pr.addRate": "إضافة سعر", "adm.pr.namePh": "الاسم (مثال: لعبة واحدة)", "adm.pr.pricePh": "السعر (DA)", "adm.pr.durationPh": "المدة (دقائق)",
+    
     "adm.cat.PS5": "PS5", "adm.cat.Forza": "فورزا", "adm.cat.Billiards": "بلياردو",
     "adm.level.Gaming": "الألعاب", "adm.level.Billiards": "البلياردو",
     "adm.status.Available": "متاحة", "adm.status.Occupied": "مشغولة", "adm.status.Maintenance": "صيانة",
