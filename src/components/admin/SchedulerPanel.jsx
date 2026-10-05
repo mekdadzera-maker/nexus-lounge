@@ -12,6 +12,7 @@ const DEFAULT_BLOCK_MIN = 30;
 
 function toMin(t) { if (!t) return null; const [h, m] = t.split(":").map(Number); return h * 60 + (m || 0); }
 function fromMin(min) { const w = ((min % 1440) + 1440) % 1440; return `${String(Math.floor(w / 60)).padStart(2, "0")}:${String(w % 60).padStart(2, "0")}`; }
+function localToday() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
 function hourLabel(h) { const hh = ((h % 24) + 24) % 24; return `${String(hh).padStart(2, "0")}:00`; }
 
 export default function SchedulerPanel() {
@@ -19,7 +20,11 @@ export default function SchedulerPanel() {
   const [stations, setStations] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [tiers, setTiers] = useState([]);
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [date, setDate] = useState(localToday());
+  const [, setTick] = useState(0);
+  useEffect(() => { const id = setInterval(() => setTick((x) => x + 1), 30000); return () => clearInterval(id); }, []);
+  const nowD = new Date();
+  const nowMinutes = nowD.getHours() * 60 + nowD.getMinutes();
   const [loading, setLoading] = useState(true);
   const [walkin, setWalkin] = useState(null);
   const [clearBk, setClearBk] = useState(null);
