@@ -131,7 +131,7 @@ export default function SessionAlarmNotifier() {
               <p className="truncate text-xs text-white/40">{r.fullName}</p>
               <div className="mt-3 flex gap-2">
                 <Link
-                  to="/admin"
+                  to="/admin/dashboard"
                   onClick={() => dismiss(r.id)}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-[#08080a] hover:bg-white/90"
                 >
