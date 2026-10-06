@@ -85,10 +85,11 @@ export default function SchedulerPanel() {
                       const start = toMin(b.start_time);
                       let end = b.end_time ? toMin(b.end_time) : start + DEFAULT_BLOCK_MIN * (b.quantity || 1);
                       if (b.end_time && end <= start) end += 1440;
+                      const ended = date === localToday() && end <= nowMinutes;
                       const left = ((start - START_HOUR * 60) / 60) * PX_PER_HOUR;
                       const w = Math.max(20, ((end - start) / 60) * PX_PER_HOUR);
                       return (
-                        <button key={b.id} onClick={() => setClearBk(b)} className="absolute top-2 flex h-10 flex-col justify-center overflow-hidden rounded-lg bg-blue-500/80 px-2 text-left text-[10px] text-white hover:bg-blue-400" style={{ left: Math.max(0, left), width: w }}>
+                        <button key={b.id} onClick={() => setClearBk(b)} className={`absolute top-2 flex h-10 flex-col justify-center overflow-hidden rounded-lg ${ended ? "bg-white/10 text-white/40" : "bg-blue-500/80 text-white hover:bg-blue-400"} px-2 text-left text-[10px]`} style={{ left: Math.max(0, left), width: w }}>
                           <span className="truncate font-semibold">{b.full_name}</span>
                           <span className="truncate opacity-80">{b.start_time} · {b.mode}</span>
                         </button>
@@ -196,4 +197,4 @@ function ClearModal({ booking, stationName, onClose, onClear }) {
       </div>
     </div>
   );
-                }
+}
