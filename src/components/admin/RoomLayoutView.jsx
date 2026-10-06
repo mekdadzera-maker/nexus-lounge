@@ -50,8 +50,8 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
 
   useEffect(() => {
     const load = async () => {
-    const today = localDateStr();
-    const { data } = await supabase.from("bookings").select("*").in("booking_date", [shiftDate(today, -1), today]).neq("status", "Completed");
+      const today = localDateStr();
+      const { data } = await supabase.from("bookings").select("*").in("booking_date", [shiftDate(today, -1), today]).neq("status", "Completed");
       setBookings(data || []);
     };
     load();
@@ -63,7 +63,7 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
   const nowMin = (() => { const d = new Date(now); return d.getHours() * 60 + d.getMinutes(); })();
   const todayStr = localDateStr();
   const activeBooking = (sid) => bookings.find((b) => b.station_id === sid && isRunning(b, todayStr, nowMin));
-  
+
   useEffect(() => {
     setPositions((p) => {
       const next = { ...p };
