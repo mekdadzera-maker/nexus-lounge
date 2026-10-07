@@ -28,7 +28,7 @@ export const ADMIN_DICT = {
     "adm.ly.drag": "Drag stations to reposition", "adm.ly.liveStatus": "Live floor status",
     "adm.ly.done": "Done", "adm.ly.edit": "Edit Layout", "adm.ly.entrance": "Entrance",
     "adm.ly.maint": "Maint.", "adm.ly.inUse": "In use", "adm.ly.free": "Free", "adm.ly.inSession": "In session",
-    "adm.ly.billiard": "Billiard", "adm.ly.ps5": "PS5 Sofa", "adm.ly.forza": "Forza Pod",
+    "adm.ly.billiard": "Billiard", "adm.ly.ps5": "PS5 Sofa", "adm.ly.forza": "Forza Pod", "adm.ly.ended": "Time's up",
     "adm.room.Upper": "Billiards", "adm.room.Lower": "Gaming Floor", "adm.room.VIP": "VIP",
 
     "adm.sh.select": "Select a chat to start.",
@@ -58,7 +58,7 @@ export const ADMIN_DICT = {
     "adm.ly.drag": "Faites glisser les stations pour les repositionner", "adm.ly.liveStatus": "État de la salle en direct",
     "adm.ly.done": "Terminé", "adm.ly.edit": "Modifier le plan", "adm.ly.entrance": "Entrée",
     "adm.ly.maint": "Maint.", "adm.ly.inUse": "Utilisée", "adm.ly.free": "Libre", "adm.ly.inSession": "En session",
-    "adm.ly.billiard": "Billard", "adm.ly.ps5": "Canapé PS5", "adm.ly.forza": "Capsule Forza",
+    "adm.ly.billiard": "Billard", "adm.ly.ps5": "Canapé PS5", "adm.ly.forza": "Capsule Forza", "adm.ly.ended": "Temps écoulé",
     "adm.room.Upper": "Billard", "adm.room.Lower": "Salle de jeux", "adm.room.VIP": "VIP",
 
     "adm.sh.select": "Sélectionnez une conversation pour commencer.",
@@ -88,7 +88,7 @@ export const ADMIN_DICT = {
     "adm.ly.drag": "اسحب المحطات لتغيير مواضعها", "adm.ly.liveStatus": "حالة القاعة مباشرة",
     "adm.ly.done": "تم", "adm.ly.edit": "تعديل المخطط", "adm.ly.entrance": "المدخل",
     "adm.ly.maint": "صيانة", "adm.ly.inUse": "قيد الاستخدام", "adm.ly.free": "متاحة", "adm.ly.inSession": "في جلسة",
-    "adm.ly.billiard": "بلياردو", "adm.ly.ps5": "أريكة PS5", "adm.ly.forza": "كبسولة فورزا",
+    "adm.ly.billiard": "بلياردو", "adm.ly.ps5": "أريكة PS5", "adm.ly.forza": "كبسولة فورزا", "adm.ly.ended": "انتهى الوقت",
     "adm.room.Upper": "البلياردو", "adm.room.Lower": "صالة الألعاب", "adm.room.VIP": "VIP",
 
     "adm.sh.select": "اختر محادثة للبدء.",
