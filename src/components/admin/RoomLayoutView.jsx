@@ -9,14 +9,23 @@ const toMin = (t) => { if (!t) return null; const [h, m] = t.split(":").map(Numb
 const pad = (n) => String(n).padStart(2, "0");
 const localDateStr = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const shiftDate = (s, days) => { const [y, m, d] = s.split("-").map(Number); return localDateStr(new Date(y, m - 1, d + days)); };
-// true only while the session is running: start <= now < end (also handles sessions that cross midnight)
-function isRunning(b, today, nowMin) {
+const GLOW_WINDOW_MIN = 120; // a station keeps glowing up to 2h after its session ends, until staff taps it
+// start/end of a session in minutes relative to today's midnight (also handles sessions that cross midnight)
+function sessionWindow(b, today) {
   const start = toMin(b.start_time);
-  if (start == null) return false;
+  if (start == null) return null;
   const base = b.booking_date === today ? 0 : -1440;
   let end = b.end_time ? toMin(b.end_time) : start + 30 * (b.quantity || 1);
   if (b.end_time && end <= start) end += 1440;
-  return nowMin >= base + start && nowMin < base + end;
+  return { start: base + start, end: base + end };
+}
+function isRunning(b, today, nowMin) {
+  const w = sessionWindow(b, today);
+  return !!w && nowMin >= w.start && nowMin < w.end;
+}
+function justEnded(b, today, nowMin) {
+  const w = sessionWindow(b, today);
+  return !!w && nowMin >= w.end && nowMin - w.end <= GLOW_WINDOW_MIN;
 }
 const VIP_IDS = ["PS5-08", "PS5-09"];
 const ROOMS = [
@@ -47,6 +56,8 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
   const [positions, setPositions] = useState(() => initPositions(stations));
   const [savingId, setSavingId] = useState(null);
   const roomRefs = useRef({});
+  const [dismissed, setDismissed] = useState(() => { try { return JSON.parse(localStorage.getItem("nexus_glow_dismissed") || "[]"); } catch { return []; } });
+  const dismiss = (id) => setDismissed((d) => { const next = [...d, id].slice(-100); try { localStorage.setItem("nexus_glow_dismissed", JSON.stringify(next)); } catch {} return next; });
 
   useEffect(() => {
     const load = async () => {
@@ -63,6 +74,7 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
   const nowMin = (() => { const d = new Date(now); return d.getHours() * 60 + d.getMinutes(); })();
   const todayStr = localDateStr();
   const activeBooking = (sid) => bookings.find((b) => b.station_id === sid && isRunning(b, todayStr, nowMin));
+  const endedBooking = (sid) => bookings.find((b) => b.station_id === sid && !dismissed.includes(b.id) && justEnded(b, todayStr, nowMin));
 
   useEffect(() => {
     setPositions((p) => {
@@ -108,6 +120,7 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
 
   return (
     <div className="space-y-6" style={{ overscrollBehavior: "contain" }}>
+      <style>{`@keyframes nxGlow { 0%, 100% { box-shadow: 0 0 0 2px rgba(248,113,113,.9), 0 0 8px 2px rgba(248,113,113,.5); } 50% { box-shadow: 0 0 0 2px rgba(248,113,113,1), 0 0 22px 8px rgba(248,113,113,.95); } }`}</style>
       <div className="flex items-center justify-between">
         <p className="text-sm text-white/50">{edit ? t("adm.ly.drag") : t("adm.ly.liveStatus")}</p>
         <button onClick={() => setEdit((v) => !v)} className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition ${edit ? "bg-emerald-500 text-black hover:bg-emerald-400" : "border border-white/10 bg-white/5 text-white/70 hover:bg-white/10"}`}>
@@ -140,12 +153,13 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
                   {list.map((s) => {
                     const pos = positions[s.id] || { x: 10, y: 18 };
                     const b = activeBooking(s.id);
+                    const eb = !b && s.status !== "Maintenance" ? endedBooking(s.id) : null;
                     const cat = getCategory(s);
                     const f = FURN[cat] || FURN.ps5;
-                    const dot = s.status === "Maintenance" ? "bg-amber-400" : b ? "bg-blue-400" : "bg-emerald-300";
+                    const dot = s.status === "Maintenance" ? "bg-amber-400" : b ? "bg-blue-400" : eb ? "bg-red-400" : "bg-emerald-300";
                     return (
-                      <div key={s.id} onPointerDown={(e) => startDrag(e, s, room.key)} style={{ left: `${pos.x}%`, top: `${pos.y}%` }} className={`absolute -translate-x-1/2 -translate-y-1/2 select-none touch-none ${edit ? "cursor-grab active:cursor-grabbing" : "cursor-default"} rounded-md`} title={localizedName(s, lang)}>
-                        <div className={`relative ${f.w} ${f.h} ${f.radius} border-2 flex flex-col items-center justify-center text-center`} style={{ backgroundColor: f.felt, borderColor: f.frame }}>
+                      <div key={s.id} onPointerDown={(e) => startDrag(e, s, room.key)} onClick={() => { if (!edit && eb) dismiss(eb.id); }} style={{ left: `${pos.x}%`, top: `${pos.y}%` }} className={`absolute -translate-x-1/2 -translate-y-1/2 select-none touch-none ${edit ? "cursor-grab active:cursor-grabbing" : eb ? "cursor-pointer" : "cursor-default"} rounded-md`} title={localizedName(s, lang)}>
+                        <div className={`relative ${f.w} ${f.h} ${f.radius} border-2 flex flex-col items-center justify-center text-center`} style={{ backgroundColor: f.felt, borderColor: eb ? "#f87171" : f.frame, animation: eb ? "nxGlow 1.2s ease-in-out infinite" : undefined }}>
                           {edit && onEdit && (
                             <button onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); onEdit(s); }} className="absolute -left-1.5 -top-1.5 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full border border-white/30 bg-[#101012] text-white/80 hover:bg-white hover:text-black">
                               <Pencil className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
@@ -153,7 +167,7 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
                           )}
                           <span className={`absolute right-1 top-1 h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full ${dot}`} />
                           <span className="text-[8px] sm:text-[9px] font-bold leading-none text-white/90">{s.id}</span>
-                          <span className="mt-0.5 text-[7px] sm:text-[8px] leading-none text-white/60">{s.status === "Maintenance" ? t("adm.ly.maint") : b ? (b.mode || t("adm.ly.inUse")) : t("adm.ly.free")}</span>
+                          <span className="mt-0.5 text-[7px] sm:text-[8px] leading-none text-white/60">{s.status === "Maintenance" ? t("adm.ly.maint") : b ? (b.mode || t("adm.ly.inUse")) : eb ? t("adm.ly.ended") : t("adm.ly.free")}</span>
                           {savingId === s.id && <span className="absolute -right-1 -top-1 h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-400" />}
                         </div>
                       </div>
@@ -170,6 +184,7 @@ export default function RoomLayoutView({ stations, onEdit, onMoved }) {
           <Legend className="bg-[#365c36]" label={t("adm.ly.forza")} />
           <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-400" /> {t("adm.ly.free")}</span>
           <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-blue-400" /> {t("adm.ly.inSession")}</span>
+          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-red-400" /> {t("adm.ly.ended")}</span>
         </div>
       </div>
     </div>
