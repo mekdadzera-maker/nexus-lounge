@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, UserPlus, LogIn, UserX } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -6,6 +6,32 @@ import { useLang } from "@/lib/i18n";
 
 export default function GuestPrompt({ station, onClose, onGuest }) {
   const { t } = useLang();
+  const [canClose, setCanClose] = useState(false);
+  const pressStartedOnBackdropRef = useRef(false);
+
+  useEffect(() => {
+    setCanClose(false);
+    let raf1, raf2;
+    raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => setCanClose(true));
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
+  }, [station?.id]);
+
+  const handleBackdropPointerDown = (e) => {
+    pressStartedOnBackdropRef.current = e.target === e.currentTarget;
+  };
+
+  const handleBackdropPointerUp = (e) => {
+    if (canClose && pressStartedOnBackdropRef.current && e.target === e.currentTarget) {
+      onClose();
+    }
+    pressStartedOnBackdropRef.current = false;
+  };
+
   if (!station) return null;
   return (
     <AnimatePresence>
@@ -14,7 +40,8 @@ export default function GuestPrompt({ station, onClose, onGuest }) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
-        onClick={onClose}
+        onPointerDown={handleBackdropPointerDown}
+        onPointerUp={handleBackdropPointerUp}
       >
         <motion.div
           initial={{ scale: 0.92, opacity: 0 }}
@@ -22,7 +49,7 @@ export default function GuestPrompt({ station, onClose, onGuest }) {
           exit={{ scale: 0.92, opacity: 0 }}
           transition={{ type: "spring", damping: 24, stiffness: 300 }}
           onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-sm rounded-3xl border border-white/10 bg-[#101012] p-7 text-center"
+          className="relative w-full max-w-sm rounded-3xl border border-white/10 bg-[#101012] p-7 text-center"
         >
           <button onClick={onClose} className="absolute right-4 top-4 rounded-lg p-1 text-white/40 hover:text-white">
             <X className="h-5 w-5" />
