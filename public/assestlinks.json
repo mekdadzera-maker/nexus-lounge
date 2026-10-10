@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "app.vercel.nexus_lounge.twa",
+    "sha256_cert_fingerprints": ["ED:DD:CD:25:B0:C9:21:BA:B5:09:72:8B:F8:36:8B:FE:30:D4:60:99:6F:5E:23:DC:E3:EB:94:1D:23:71:CF:66"]
+  }
+}]
