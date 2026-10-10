@@ -72,7 +72,7 @@ export default function SupportHub() {
   };
 
   return (
-    <div className="grid h-[70vh] grid-cols-1 gap-4 md:grid-cols-[260px_1fr_240px]">
+    <div className="grid grid-cols-1 grid-rows-[160px_60vh_200px] gap-4 md:h-[70vh] md:grid-cols-[260px_1fr_240px] md:grid-rows-1">
       <div className="scrollbar-thin overflow-y-auto rounded-2xl border border-white/10 bg-white/5 p-2">
         {rooms.length === 0 && <p className="p-4 text-sm text-white/40">{t("admin.noRooms")}</p>}
         {rooms.map((r) => (
