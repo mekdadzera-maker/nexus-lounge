@@ -1,17 +1,31 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
-
-import React, { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock, Loader2, AlertTriangle } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function ResetPassword() {
-  const [searchParams] = useSearchParams();
-  const resetToken = searchParams.get("token");
+  // Supabase puts the recovery session in the URL hash and establishes a
+  // session automatically on load; it also fires a PASSWORD_RECOVERY event.
+  const [hasRecoverySession, setHasRecoverySession] = useState(null); // null = checking
+
+  useEffect(() => {
+    let settled = false;
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        settled = true;
+        setHasRecoverySession(true);
+      }
+    });
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!settled) setHasRecoverySession(!!session);
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -27,7 +41,8 @@ export default function ResetPassword() {
     }
     setLoading(true);
     try {
-      await db.auth.resetPassword({ resetToken, newPassword });
+      const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+      if (updateError) throw updateError;
       window.location.href = "/login";
     } catch (err) {
       setError(err.message || "Failed to reset password");
@@ -36,7 +51,15 @@ export default function ResetPassword() {
     }
   };
 
-  if (!resetToken) {
+  if (hasRecoverySession === null) {
+    return (
+      <AuthLayout icon={Lock} title="New password" subtitle="Checking your link…">
+        <div className="flex justify-center py-6"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+      </AuthLayout>
+    );
+  }
+
+  if (!hasRecoverySession) {
     return (
       <AuthLayout
         icon={AlertTriangle}
