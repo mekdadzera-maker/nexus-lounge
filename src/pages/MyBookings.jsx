@@ -1,5 +1,3 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { CalendarCheck, Gamepad2, Clock, Calendar, Loader2, Receipt, ChevronRight } from "lucide-react";
@@ -8,6 +6,7 @@ import Navbar from "@/components/lounge/Navbar";
 import Footer from "@/components/lounge/Footer";
 import { useAuth } from "@/lib/AuthContext";
 import { useLang } from "@/lib/i18n";
+import { supabase } from "@/lib/supabaseClient";
 
 const PAYMENT_STYLES = {
   Pending: "bg-amber-500/15 text-amber-300",
@@ -23,9 +22,13 @@ export default function MyBookings() {
 
   useEffect(() => {
     if (!user?.id) { setLoading(false); return; }
-    db.entities.Bookings.filter({ created_by_id: user.id }, "-created_date", 100)
-      .then(setBookings)
-      .catch(() => setBookings([]))
+    supabase
+      .from("bookings")
+      .select("*, stations(name)")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(100)
+      .then(({ data, error }) => setBookings(error ? [] : data || []))
       .finally(() => setLoading(false));
   }, [user?.id]);
 
@@ -82,12 +85,12 @@ function Group({ title, items, t, muted }) {
                   <Gamepad2 className="h-5 w-5 text-blue-400" />
                 </div>
                 <div>
-                  <p className="font-semibold text-white">{b.station_name}</p>
-                  <p className="text-xs text-white/40">{b.booking_mode}</p>
+                  <p className="font-semibold text-white">{b.stations?.name || "—"}</p>
+                  <p className="text-xs text-white/40">{b.mode}</p>
                 </div>
               </div>
-              <span className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold ${PAYMENT_STYLES[b.payment_status] || "bg-white/10 text-white/60"}`}>
-                {b.payment_status}
+              <span className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold ${PAYMENT_STYLES[b.status] || "bg-white/10 text-white/60"}`}>
+                {b.status}
               </span>
             </div>
 
@@ -98,8 +101,8 @@ function Group({ title, items, t, muted }) {
             </div>
 
             <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-3">
-              <span className="text-xs text-white/40">{t("conf.qty")}: {b.booking_quantity} · {t("mb.contact")}: {b.contact_method}</span>
-              <span className="font-heading text-lg font-bold text-emerald-400">{b.total_price} <span className="text-xs text-white/50">DA</span></span>
+              <span className="text-xs text-white/40">{t("conf.qty")}: {b.quantity} · {t("mb.contact")}: {b.contact_method}</span>
+              <span className="font-heading text-lg font-bold text-emerald-400">{b.total_due} <span className="text-xs text-white/50">DA</span></span>
             </div>
           </div>
         ))}
