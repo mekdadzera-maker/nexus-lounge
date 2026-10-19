@@ -76,6 +76,7 @@ export default function BookingForm({ station, tiers, settings, user, onClose, o
         .from("bookings")
         .insert({
           station_id: station.id,
+          user_id: user?.id || null,
           full_name: name.trim(),
           contact_method: contactMethod,
           contact_value: contactValue.trim(),
@@ -85,7 +86,8 @@ export default function BookingForm({ station, tiers, settings, user, onClose, o
           mode: selectedTier.label,
           quantity: quantity,
           total_due: total,
-        })
+          reservation_code: code,
+       })
         .select()
         .single();
 
