@@ -7,6 +7,7 @@ import Footer from "@/components/lounge/Footer";
 import { useAuth } from "@/lib/AuthContext";
 import { useLang } from "@/lib/i18n";
 import { supabase } from "@/lib/supabaseClient";
+import Database from "@tauri-apps/plugin-sql";
 
 const PAYMENT_STYLES = {
   Pending: "bg-amber-500/15 text-amber-300",
@@ -22,14 +23,32 @@ export default function MyBookings() {
 
   useEffect(() => {
     if (!user?.id) { setLoading(false); return; }
-    supabase
-      .from("bookings")
-      .select("*, stations(name)")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(100)
-      .then(({ data, error }) => setBookings(error ? [] : data || []))
-      .finally(() => setLoading(false));
+
+    async function loadBookings() {
+      try {
+        const { data, error } = await supabase
+          .from("bookings")
+          .select("*, stations(name)")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(100);
+        if (error) throw error;
+        setBookings(data || []);
+      } catch (e) {
+        // No internet — fall back to the local cache (currently empty until Phase 2 sync is built)
+        try {
+          const db = await Database.load("sqlite:lounge-local.db");
+          const local = await db.select("SELECT * FROM bookings ORDER BY booking_date DESC");
+          setBookings(local || []);
+        } catch (localErr) {
+          setBookings([]);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadBookings();
   }, [user?.id]);
 
   const now = new Date();
