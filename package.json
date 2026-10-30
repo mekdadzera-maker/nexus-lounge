@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "tauri": "tauri"
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --quiet",
@@ -12,6 +13,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/plugin-sql": "^2.0.0"
     "@hello-pangea/dnd": "^17.0.0",
     "@hookform/resolvers": "^4.1.2",
     "@radix-ui/react-accordion": "^1.2.3",
@@ -71,6 +74,7 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0"
     "@eslint/js": "^9.19.0",
     "@types/node": "^22.13.5",
     "@types/react": "^18.2.66",
