@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { CalendarRange, Plus, Loader2, X, Trash2 } from "lucide-react";
+import { CalendarRange, Plus, Loader2, X, Trash2, WifiOff } from "lucide-react";
 import { tiersForStation, computeEndTime } from "@/lib/pricing";
 import { supabase } from "@/lib/supabaseClient";
 import { useLang } from "@/lib/i18n";
 import { localizedName } from "@/lib/stationI18n";
+import {
+  getLocalStations,
+  getLocalBookingsByDate,
+  getLocalPricingTiers,
+  createLocalBooking,
+  deleteLocalBooking,
+  updateLocalStationStatus,
+  pullFromCloud,
+} from "@/lib/localSync";
 
 const START_HOUR = 10;
 const END_HOUR = 27;
@@ -22,6 +31,7 @@ export default function SchedulerPanel() {
   const [tiers, setTiers] = useState([]);
   const [date, setDate] = useState(localToday());
   const [, setTick] = useState(0);
+  const [offline, setOffline] = useState(false);
   useEffect(() => { const id = setInterval(() => setTick((x) => x + 1), 30000); return () => clearInterval(id); }, []);
   const nowD = new Date();
   const nowMinutes = nowD.getHours() * 60 + nowD.getMinutes();
@@ -31,15 +41,37 @@ export default function SchedulerPanel() {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: st }, { data: bk }, { data: tr }] = await Promise.all([
-      supabase.from("stations").select("*"),
-      supabase.from("bookings").select("*").eq("booking_date", date),
-      supabase.from("pricing_tiers").select("*"),
-    ]);
-    setStations(st || []);
-    setBookings(bk || []);
-    setTiers(tr || []);
-    setLoading(false);
+    try {
+      const [{ data: st, error: stErr }, { data: bk, error: bkErr }, { data: tr, error: trErr }] = await Promise.all([
+        supabase.from("stations").select("*"),
+        supabase.from("bookings").select("*").eq("booking_date", date),
+        supabase.from("pricing_tiers").select("*"),
+      ]);
+      if (stErr || bkErr || trErr) throw stErr || bkErr || trErr;
+      setStations(st || []);
+      setBookings(bk || []);
+      setTiers(tr || []);
+      setOffline(false);
+      pullFromCloud().catch(() => {}); // keep the local cache fresh in the background
+    } catch (e) {
+      // No internet (or Supabase unreachable) — fall back to the local cache
+      try {
+        const [st, bk, tr] = await Promise.all([
+          getLocalStations(),
+          getLocalBookingsByDate(date),
+          getLocalPricingTiers(),
+        ]);
+        setStations(st || []);
+        setBookings(bk || []);
+        setTiers(tr || []);
+        setOffline(true);
+      } catch (localErr) {
+        setStations([]); setBookings([]); setTiers([]);
+        setOffline(true);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
   useEffect(() => { load(); }, [date]);
 
@@ -52,7 +84,14 @@ export default function SchedulerPanel() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 font-heading text-lg font-bold text-white"><CalendarRange className="h-5 w-5 text-blue-400" /> {t("admin.tab.scheduler")}</h2>
+        <h2 className="flex items-center gap-2 font-heading text-lg font-bold text-white">
+          <CalendarRange className="h-5 w-5 text-blue-400" /> {t("admin.tab.scheduler")}
+          {offline && (
+            <span className="inline-flex items-center gap-1 rounded-lg bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+              <WifiOff className="h-3 w-3" /> Offline
+            </span>
+          )}
+        </h2>
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white [color-scheme:dark]" />
       </div>
 
@@ -110,8 +149,15 @@ export default function SchedulerPanel() {
           stationName={stationName(clearBk.station_id)}
           onClose={() => setClearBk(null)}
           onClear={async () => {
-            await supabase.from("bookings").delete().eq("id", clearBk.id);
-            await supabase.from("stations").update({ status: "Available" }).eq("id", clearBk.station_id);
+            try {
+              const { error: delErr } = await supabase.from("bookings").delete().eq("id", clearBk.id);
+              const { error: stErr } = await supabase.from("stations").update({ status: "Available" }).eq("id", clearBk.station_id);
+              if (delErr || stErr) throw delErr || stErr;
+            } catch (e) {
+              // No internet — clear locally, sync will push the delete once back online
+              await deleteLocalBooking(clearBk.id);
+              await updateLocalStationStatus(clearBk.station_id, "Available");
+            }
             setClearBk(null);
             load();
           }}
@@ -133,7 +179,7 @@ function WalkinModal({ data, tiers, date, onClose, onCreated }) {
   const create = async () => {
     if (!name.trim() || !tier) return;
     setSaving(true);
-    await supabase.from("bookings").insert({
+    const bookingData = {
       station_id: data.station.id,
       full_name: name.trim(),
       contact_method: "Phone",
@@ -145,8 +191,16 @@ function WalkinModal({ data, tiers, date, onClose, onCreated }) {
       quantity: qty,
       total_due: (tier.price || 0) * qty,
       status: "Pending",
-    });
-    await supabase.from("stations").update({ status: "Occupied" }).eq("id", data.station.id);
+    };
+    try {
+      const { error: insErr } = await supabase.from("bookings").insert(bookingData);
+      const { error: stErr } = await supabase.from("stations").update({ status: "Occupied" }).eq("id", data.station.id);
+      if (insErr || stErr) throw insErr || stErr;
+    } catch (e) {
+      // No internet — save locally, it'll sync up once back online
+      await createLocalBooking(bookingData);
+      await updateLocalStationStatus(data.station.id, "Occupied");
+    }
     setSaving(false);
     onCreated();
   };
