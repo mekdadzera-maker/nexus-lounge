@@ -18,6 +18,11 @@
     ]
   },
   "bundle": {
+    "windows": {
+  "webviewInstallMode": {
+    "type": "offlineInstaller"
+  }
+    }
     "active": true,
     "targets": ["nsis"],
     "icon": ["icons/icon.ico"]
