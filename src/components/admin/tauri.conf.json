@@ -1,0 +1,25 @@
+{
+  "productName": "NEXUS Lounge Admin",
+  "identifier": "com.qlf.loungeadmin",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "NEXUS Lounge Admin",
+        "width": 1280,
+        "height": 800,
+        "backgroundColor": "#08080a"
+      }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": ["icons/icon.ico"]
+  }
+}
