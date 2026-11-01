@@ -7,6 +7,17 @@ function getDB() {
   return dbPromise;
 }
 
+async function getPendingDeletes(db) {
+  const row = await db.select(`SELECT value FROM sync_meta WHERE key = 'pending_deletes'`);
+  return row[0]?.value ? JSON.parse(row[0].value) : [];
+}
+async function setPendingDeletes(db, list) {
+  await db.execute(
+    `INSERT OR REPLACE INTO sync_meta (key, value) VALUES ('pending_deletes', ?)`,
+    [JSON.stringify(list)]
+  );
+}
+
 // Pull fresh data from Supabase into the local cache (call on app start + periodically)
 export async function pullFromCloud() {
   const db = await getDB();
@@ -16,6 +27,8 @@ export async function pullFromCloud() {
 
   if (stations) {
     for (const s of stations) {
+      const existing = await db.select(`SELECT dirty FROM stations WHERE id = ?`, [s.id]);
+      if (existing[0]?.dirty) continue; // don't overwrite a local change not yet pushed
       await db.execute(
         `INSERT OR REPLACE INTO stations (id, name, category, level, description, status, dirty) VALUES (?, ?, ?, ?, ?, ?, 0)`,
         [s.id, s.name, s.category, s.level, s.description, s.status]
@@ -32,9 +45,8 @@ export async function pullFromCloud() {
   }
   if (bookings) {
     for (const b of bookings) {
-      // Don't overwrite a local booking that hasn't synced up yet
       const existing = await db.select(`SELECT dirty FROM bookings WHERE id = ?`, [b.id]);
-      if (existing[0]?.dirty) continue;
+      if (existing[0]?.dirty) continue; // don't overwrite a local booking not yet pushed
       await db.execute(
         `INSERT OR REPLACE INTO bookings (id, station_id, user_id, full_name, contact_method, contact_value, booking_date, start_time, end_time, mode, quantity, total_due, status, reservation_code, created_at, dirty)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
@@ -44,9 +56,10 @@ export async function pullFromCloud() {
   }
 }
 
-// Push anything created/changed offline up to Supabase (call whenever connection is detected)
+// Push anything created/changed/deleted offline up to Supabase (call whenever connection is detected)
 export async function pushToCloud() {
   const db = await getDB();
+
   const dirtyBookings = await db.select(`SELECT * FROM bookings WHERE dirty = 1`);
   for (const b of dirtyBookings) {
     const { error } = await supabase.from("bookings").upsert({
@@ -55,9 +68,23 @@ export async function pushToCloud() {
       start_time: b.start_time, end_time: b.end_time, mode: b.mode, quantity: b.quantity,
       total_due: b.total_due, status: b.status, reservation_code: b.reservation_code,
     });
-    if (!error) {
-      await db.execute(`UPDATE bookings SET dirty = 0 WHERE id = ?`, [b.id]);
+    if (!error) await db.execute(`UPDATE bookings SET dirty = 0 WHERE id = ?`, [b.id]);
+  }
+
+  const dirtyStations = await db.select(`SELECT * FROM stations WHERE dirty = 1`);
+  for (const s of dirtyStations) {
+    const { error } = await supabase.from("stations").update({ status: s.status }).eq("id", s.id);
+    if (!error) await db.execute(`UPDATE stations SET dirty = 0 WHERE id = ?`, [s.id]);
+  }
+
+  const pending = await getPendingDeletes(db);
+  if (pending.length) {
+    const stillPending = [];
+    for (const id of pending) {
+      const { error } = await supabase.from("bookings").delete().eq("id", id);
+      if (error) stillPending.push(id);
     }
+    await setPendingDeletes(db, stillPending);
   }
 }
 
@@ -76,12 +103,36 @@ export async function createLocalBooking(booking) {
   return id;
 }
 
-export async function getLocalBookings() {
+// Delete a booking locally and remember to delete it in Supabase once back online
+export async function deleteLocalBooking(id) {
   const db = await getDB();
-  return db.select(`SELECT * FROM bookings ORDER BY booking_date DESC`);
+  await db.execute(`DELETE FROM bookings WHERE id = ?`, [id]);
+  const pending = await getPendingDeletes(db);
+  if (!pending.includes(id)) {
+    pending.push(id);
+    await setPendingDeletes(db, pending);
+  }
+  pushToCloud().catch(() => {});
+}
+
+// Update a station's status locally (e.g. Occupied/Available), marked for sync
+export async function updateLocalStationStatus(id, status) {
+  const db = await getDB();
+  await db.execute(`UPDATE stations SET status = ?, dirty = 1 WHERE id = ?`, [status, id]);
+  pushToCloud().catch(() => {});
+}
+
+export async function getLocalBookingsByDate(date) {
+  const db = await getDB();
+  return db.select(`SELECT * FROM bookings WHERE booking_date = ? ORDER BY start_time ASC`, [date]);
 }
 
 export async function getLocalStations() {
   const db = await getDB();
   return db.select(`SELECT * FROM stations`);
-     }
+}
+
+export async function getLocalPricingTiers() {
+  const db = await getDB();
+  return db.select(`SELECT * FROM pricing_tiers`);
+}
